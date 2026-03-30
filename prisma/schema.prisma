@@ -18,6 +18,12 @@ enum SubmissionStatus {
   GRADED
 }
 
+enum AttendanceStatus {
+  PRESENT
+  LATE
+  ABSENT
+}
+
 enum SubmissionType {
   TEXT
   IMAGE
@@ -236,7 +242,7 @@ model AttendanceRecord {
   lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   studentId String
   student   User     @relation("StudentAttendance", fields: [studentId], references: [id], onDelete: Cascade)
-  present   Boolean  @default(true)
+  status    AttendanceStatus @default(PRESENT)
   note      String?
   createdAt DateTime @default(now())
 

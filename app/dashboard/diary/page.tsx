@@ -22,7 +22,7 @@ interface Lesson {
   meetLink?: string | null
   group: { id: string; name: string }
   assignment?: { id: string; title: string } | null
-  attendances: { student: { id: string; name: string; nickname: string }; present: boolean; note?: string | null }[]
+  attendances: { student: { id: string; name: string; nickname: string }; status: string; note?: string | null }[]
 }
 
 interface Group {
@@ -57,7 +57,7 @@ export default function TeacherDiaryPage() {
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
   const [expandedLesson, setExpandedLesson] = useState<string | null>(null)
-  const [attendance, setAttendance] = useState<Record<string, Record<string, { present: boolean; note: string }>>>({})
+  const [attendance, setAttendance] = useState<Record<string, Record<string, { status: "PRESENT" | "LATE" | "ABSENT"; note: string }>>>({})
   const [savingAttendance, setSavingAttendance] = useState<string | null>(null)
 
   const fetchData = async () => {
@@ -83,10 +83,10 @@ export default function TeacherDiaryPage() {
     if (attendance[lesson.id]) return
     const group = groups.find(g => g.id === lesson.group.id)
     if (!group) return
-    const init: Record<string, { present: boolean; note: string }> = {}
+    const init: Record<string, { status: "PRESENT" | "LATE" | "ABSENT"; note: string }> = {}
     for (const m of group.memberships) {
       const existing = lesson.attendances.find(a => a.student.id === m.user.id)
-      init[m.user.id] = { present: existing?.present ?? true, note: existing?.note ?? "" }
+      init[m.user.id] = { status: (existing?.status as "PRESENT" | "LATE" | "ABSENT") ?? "PRESENT", note: existing?.note ?? "" }
     }
     setAttendance(prev => ({ ...prev, [lesson.id]: init }))
   }
@@ -104,7 +104,7 @@ export default function TeacherDiaryPage() {
     setSavingAttendance(lessonId)
     const records = Object.entries(attendance[lessonId] || {}).map(([studentId, val]) => ({
       studentId,
-      present: val.present,
+      status: val.status,
       note: val.note || undefined,
     }))
     const res = await fetch(`/api/lessons/${lessonId}/attendance`, {
@@ -305,8 +305,8 @@ function LessonSection({
   title: string
   lessons: Lesson[]
   groups: Group[]
-  attendance: Record<string, Record<string, { present: boolean; note: string }>>
-  setAttendance: React.Dispatch<React.SetStateAction<Record<string, Record<string, { present: boolean; note: string }>>>>
+  attendance: Record<string, Record<string, { status: "PRESENT" | "LATE" | "ABSENT"; note: string }>>
+  setAttendance: React.Dispatch<React.SetStateAction<Record<string, Record<string, { status: "PRESENT" | "LATE" | "ABSENT"; note: string }>>>>
   expandedLesson: string | null
   toggleLesson: (lesson: Lesson) => void
   saveAttendance: (id: string) => Promise<void>
@@ -326,7 +326,7 @@ function LessonSection({
           const group = groups.find(g => g.id === lesson.group.id)
           const isExpanded = expandedLesson === lesson.id
           const attendanceData = attendance[lesson.id]
-          const presentCount = lesson.attendances.filter(a => a.present).length
+          const presentCount = lesson.attendances.filter(a => a.status === "PRESENT").length
 
           return (
             <div key={lesson.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
@@ -398,25 +398,32 @@ function LessonSection({
                     <>
                       <div className="space-y-2 mb-4">
                         {group.memberships.map(m => {
-                          const studentData = attendanceData?.[m.user.id] ?? { present: true, note: "" }
+                          const studentData = attendanceData?.[m.user.id] ?? { status: "PRESENT" as const, note: "" }
                           return (
                             <div key={m.user.id} className="flex items-center gap-3 bg-white rounded-lg px-3 py-2">
-                              <button
-                                onClick={() => setAttendance(prev => ({
-                                  ...prev,
-                                  [lesson.id]: {
-                                    ...prev[lesson.id],
-                                    [m.user.id]: { ...studentData, present: !studentData.present }
-                                  }
-                                }))}
-                                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-                                  studentData.present
-                                    ? "bg-green-500 border-green-500 text-white"
-                                    : "border-gray-300 text-transparent"
-                                }`}
-                              >
-                                ✓
-                              </button>
+                              <div className="flex gap-1">
+                                {(["PRESENT", "LATE", "ABSENT"] as const).map(s => (
+                                  <button
+                                    key={s}
+                                    onClick={() => setAttendance(prev => ({
+                                      ...prev,
+                                      [lesson.id]: {
+                                        ...prev[lesson.id],
+                                        [m.user.id]: { ...studentData, status: s }
+                                      }
+                                    }))}
+                                    className={`text-xs px-2 py-1 rounded font-medium transition-all ${
+                                      studentData.status === s
+                                        ? s === "PRESENT" ? "bg-[#E0FFC2] text-green-800"
+                                          : s === "LATE" ? "bg-yellow-200 text-yellow-800"
+                                          : "bg-red-200 text-red-700"
+                                        : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+                                    }`}
+                                  >
+                                    {s === "PRESENT" ? "П" : s === "LATE" ? "З" : "В"}
+                                  </button>
+                                ))}
+                              </div>
                               <span className="flex-1 text-sm font-medium text-gray-800">{m.user.name}</span>
                               <span className="text-xs text-gray-400">{m.user.nickname}</span>
                               <input
