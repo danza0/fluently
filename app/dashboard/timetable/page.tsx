@@ -39,7 +39,7 @@ const emptyForm = {
   date: "",
   startTime: "",
   endTime: "",
-  meetLink: "https://meet.google.com/oxt-dyuy-bvw",
+  meetLink: "",
   groupId: "",
   assignmentId: "",
 }

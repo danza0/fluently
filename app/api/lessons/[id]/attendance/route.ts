@@ -17,7 +17,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   const results = await Promise.all(
-    body.attendance.map(async (record: { studentId: string; status: "PRESENT" | "LATE" | "ABSENT"; note?: string }) => {
+    body.attendance.map(async (record: { studentId: string; status?: "PRESENT" | "LATE" | "ABSENT"; note?: string }) => {
       const status = record.status ?? "PRESENT"
       return prisma.attendanceRecord.upsert({
         where: { lessonId_studentId: { lessonId, studentId: record.studentId } },
