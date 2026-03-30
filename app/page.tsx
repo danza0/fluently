@@ -21,8 +21,8 @@ export default function HomePage() {
       <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-sky-mid">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-milk rounded-lg flex items-center justify-center">
-              <GraduationCap className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 bg-sky-custom rounded-lg flex items-center justify-center">
+              <GraduationCap className="w-5 h-5 text-sky-darker" />
             </div>
             <span className="text-xl font-bold text-gray-900">Fluently</span>
           </div>
@@ -36,7 +36,7 @@ export default function HomePage() {
               <Button variant="ghost" className="text-gray-700">Увійти</Button>
             </Link>
             <Link href="/register">
-              <Button className="bg-milk hover:bg-milk-dark text-white rounded-xl">Спробувати</Button>
+            <Button className="bg-sky-custom hover:bg-sky-dark text-sky-darker rounded-xl">Спробувати</Button>
             </Link>
           </div>
         </div>
@@ -64,7 +64,7 @@ export default function HomePage() {
             </motion.p>
             <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/register">
-                <Button size="lg" className="bg-milk hover:bg-milk-dark text-white rounded-xl px-8 h-12 text-base">
+                <Button size="lg" className="bg-sky-custom hover:bg-sky-dark text-sky-darker rounded-xl px-8 h-12 text-base">
                   Спробувати платформу
                   <ChevronRight className="ml-2 w-4 h-4" />
                 </Button>
@@ -134,8 +134,8 @@ export default function HomePage() {
                 variants={fadeIn}
                 className="bg-sky-light rounded-2xl p-6 hover:shadow-md transition-shadow"
               >
-                <div className="w-12 h-12 bg-milk rounded-xl flex items-center justify-center mb-4">
-                  <feature.icon className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-sky-custom rounded-xl flex items-center justify-center mb-4">
+                  <feature.icon className="w-6 h-6 text-sky-darker" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
                 <p className="text-gray-600">{feature.desc}</p>
@@ -154,7 +154,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-16 items-start">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
               <h3 className="text-2xl font-bold text-gray-900 mb-8">
-                <span className="bg-milk text-white rounded-lg px-3 py-1 text-sm mr-2">Вчитель</span>
+                <span className="bg-sky-custom text-sky-darker rounded-lg px-3 py-1 text-sm mr-2">Вчитель</span>
               </h3>
               {[
                 { step: "01", title: "Створює групи", desc: "Окрема група для кожного класу з кодом для приєднання" },
@@ -226,7 +226,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-4 bg-gradient-to-r from-milk to-milk-dark">
+      <section className="py-20 px-4 bg-gradient-to-r from-sky-custom to-sky-dark">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="max-w-4xl mx-auto text-center text-white">
           <motion.h2 variants={fadeIn} className="text-4xl font-bold mb-4">Готові почати?</motion.h2>
           <motion.p variants={fadeIn} className="text-sky-light text-lg mb-8">Приєднуйтесь до платформи вже сьогодні</motion.p>
@@ -249,8 +249,8 @@ export default function HomePage() {
       <footer className="py-12 px-4 bg-gray-900 text-gray-400">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-milk rounded-lg flex items-center justify-center">
-              <GraduationCap className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 bg-sky-custom rounded-lg flex items-center justify-center">
+              <GraduationCap className="w-5 h-5 text-sky-darker" />
             </div>
             <span className="text-white font-bold text-xl">Fluently</span>
           </div>

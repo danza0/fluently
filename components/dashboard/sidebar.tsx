@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
-import { GraduationCap, LayoutDashboard, Users, BookOpen, Calendar, BarChart2, LogOut, User } from "lucide-react"
+import { GraduationCap, LayoutDashboard, Users, BookOpen, Calendar, BarChart2, LogOut, User, BookMarked } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface SidebarProps {
@@ -16,6 +16,7 @@ const teacherLinks = [
   { href: "/dashboard", label: "Дашборд", icon: LayoutDashboard },
   { href: "/dashboard/groups", label: "Групи", icon: Users },
   { href: "/dashboard/assignments", label: "Завдання", icon: BookOpen },
+  { href: "/dashboard/diary", label: "Щоденник", icon: BookMarked },
   { href: "/dashboard/students", label: "Учні", icon: User },
   { href: "/dashboard/calendar", label: "Календар", icon: Calendar },
   { href: "/dashboard/analytics", label: "Аналітика", icon: BarChart2 },
@@ -25,6 +26,7 @@ const teacherLinks = [
 const studentLinks = [
   { href: "/student", label: "Дашборд", icon: LayoutDashboard },
   { href: "/student/groups", label: "Мої групи", icon: Users },
+  { href: "/student/diary", label: "Щоденник", icon: BookMarked },
   { href: "/student/calendar", label: "Календар", icon: Calendar },
   { href: "/student/profile", label: "Профіль", icon: User },
 ]
@@ -37,7 +39,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
     <aside className="w-64 min-h-screen bg-white border-r border-gray-100 flex flex-col">
       <div className="p-6 border-b border-gray-100">
         <Link href={role === "TEACHER" ? "/dashboard" : "/student"} className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-milk rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-sky-custom rounded-lg flex items-center justify-center">
             <GraduationCap className="w-5 h-5 text-white" />
           </div>
           <span className="text-lg font-bold text-gray-900">Fluently</span>

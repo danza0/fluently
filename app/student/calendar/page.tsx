@@ -59,7 +59,7 @@ export default async function StudentCalendarPage() {
                 </div>
                 {dayAssignments.map(a => (
                   <Link key={a.id} href={`/student/assignments/${a.id}`}>
-                    <div className={`text-xs rounded px-1 py-0.5 mb-1 truncate ${a.submissions[0] ? "bg-green-500 text-white" : "bg-orange-400 text-white"}`}>
+                    <div className={`text-xs rounded px-1 py-0.5 mb-1 truncate ${a.submissions[0] ? "bg-green-500 text-white" : "bg-amber-500 text-white"}`}>
                       {a.title}
                     </div>
                   </Link>

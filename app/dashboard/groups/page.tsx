@@ -27,7 +27,7 @@ export default async function GroupsPage() {
           <p className="text-gray-500 mt-1">Управляйте вашими навчальними групами</p>
         </div>
         <Link href="/dashboard/groups/new">
-          <Button className="bg-milk hover:bg-milk-dark gap-2">
+          <Button className="bg-sky-custom hover:bg-sky-dark gap-2">
             <Plus className="w-4 h-4" />
             Нова група
           </Button>
@@ -40,7 +40,7 @@ export default async function GroupsPage() {
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Немає груп</h3>
           <p className="text-gray-500 mb-6">Створіть першу групу, щоб почати роботу</p>
           <Link href="/dashboard/groups/new">
-            <Button className="bg-milk hover:bg-milk-dark">Створити групу</Button>
+            <Button className="bg-sky-custom hover:bg-sky-dark">Створити групу</Button>
           </Link>
         </div>
       ) : (

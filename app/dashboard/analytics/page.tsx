@@ -65,7 +65,7 @@ export default async function AnalyticsPage() {
                 <span className="text-gray-600">Із запізненням</span>
                 <span className="font-medium text-orange-600">{lateCount}</span>
               </div>
-              <Progress value={submittedCount > 0 ? (lateCount / submittedCount) * 100 : 0} className="h-2 [&>div]:bg-orange-400" />
+              <Progress value={submittedCount > 0 ? (lateCount / submittedCount) * 100 : 0} className="h-2 [&>div]:bg-sky-dark" />
             </div>
           </div>
         </div>

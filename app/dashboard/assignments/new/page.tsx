@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -8,13 +8,22 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Paperclip, X, FileText, Image as ImageIcon } from "lucide-react"
 import { toast } from "sonner"
+import { MAX_FILE_SIZE, ALLOWED_MIME_TYPES, ALLOWED_FILE_ACCEPT } from "@/lib/upload-config"
+
+interface UploadedFile {
+  url: string
+  fileName: string
+  fileType: string
+}
 
 export default function NewAssignmentPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [groups, setGroups] = useState<any[]>([])
+  const [files, setFiles] = useState<File[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -35,15 +44,42 @@ export default function NewAssignmentPage() {
     }))
   }
 
+  const addFiles = (newFiles: FileList | null) => {
+    if (!newFiles) return
+    const valid = Array.from(newFiles).filter(f => {
+      if (f.size > MAX_FILE_SIZE) { toast.error(`${f.name}: файл занадто великий`); return false }
+      if (!ALLOWED_MIME_TYPES.includes(f.type)) { toast.error(`${f.name}: непідтримуваний тип файлу`); return false }
+      return true
+    })
+    setFiles(prev => [...prev, ...valid])
+  }
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.title || !form.dueDate) { toast.error("Заповніть обов'язкові поля"); return }
     setIsLoading(true)
     try {
+      const attachments: UploadedFile[] = []
+      for (const file of files) {
+        const fd = new FormData()
+        fd.append("file", file)
+        const res = await fetch("/api/upload", { method: "POST", body: fd })
+        if (res.ok) {
+          const data = await res.json()
+          attachments.push(data)
+        } else {
+          toast.error(`Помилка завантаження ${file.name}`)
+        }
+      }
+
       const res = await fetch("/api/assignments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, maxGrade: Number(form.maxGrade) }),
+        body: JSON.stringify({ ...form, maxGrade: Number(form.maxGrade), attachments }),
       })
       if (!res.ok) { toast.error("Помилка створення завдання"); return }
       toast.success("Завдання створено!")
@@ -97,12 +133,7 @@ export default function NewAssignmentPage() {
               <div className="space-y-2">
                 {groups.map((g: any) => (
                   <label key={g.id} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={form.groupIds.includes(g.id)}
-                      onChange={() => toggleGroup(g.id)}
-                      className="rounded"
-                    />
+                    <input type="checkbox" checked={form.groupIds.includes(g.id)} onChange={() => toggleGroup(g.id)} className="rounded" />
                     <span className="text-sm text-gray-700">{g.name}</span>
                     <span className="text-xs text-gray-400">({g.memberships?.length ?? 0} учнів)</span>
                   </label>
@@ -110,8 +141,37 @@ export default function NewAssignmentPage() {
               </div>
             </div>
           )}
+          <div className="space-y-2">
+            <Label>Прикріпити файли (необов&apos;язково)</Label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept={ALLOWED_FILE_ACCEPT}
+              className="hidden"
+              onChange={e => addFiles(e.target.files)}
+            />
+            <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+              <Paperclip className="w-4 h-4 mr-2" />
+              Додати файл
+            </Button>
+            {files.length > 0 && (
+              <div className="space-y-2 mt-2">
+                {files.map((file, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-sky-light px-3 py-1.5 rounded-lg text-sm">
+                    {file.type.startsWith("image/") ? <ImageIcon className="w-4 h-4 text-sky-darker" /> : <FileText className="w-4 h-4 text-sky-darker" />}
+                    <span className="flex-1 text-gray-700 truncate">{file.name}</span>
+                    <span className="text-gray-400 text-xs">{(file.size / 1024).toFixed(0)} KB</span>
+                    <button type="button" onClick={() => removeFile(i)} className="text-gray-400 hover:text-red-500">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="flex gap-3 pt-2">
-            <Button type="submit" disabled={isLoading} className="bg-sky-custom hover:bg-sky-dark">
+            <Button type="submit" disabled={isLoading} className="bg-sky-custom hover:bg-sky-dark text-sky-darker">
               {isLoading ? "Створення..." : "Створити завдання"}
             </Button>
             <Link href="/dashboard/assignments">
@@ -123,3 +183,4 @@ export default function NewAssignmentPage() {
     </div>
   )
 }
+

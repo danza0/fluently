@@ -1,52 +1,87 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Calendar, Clock, CheckCircle, AlertCircle } from "lucide-react"
+import { ArrowLeft, Calendar, Clock, CheckCircle, AlertCircle, Paperclip, X, FileText, Image as ImageIcon, Download } from "lucide-react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { uk } from "date-fns/locale"
 import { StatusBadge } from "@/components/assignments/status-badge"
+import { MAX_FILE_SIZE, ALLOWED_MIME_TYPES, ALLOWED_FILE_ACCEPT } from "@/lib/upload-config"
 
 export default function StudentAssignmentPage() {
   const params = useParams()
   const [assignment, setAssignment] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [text, setText] = useState("")
+  const [files, setFiles] = useState<File[]>([])
+  const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    fetch(`/api/assignments/${params.id}`)
-      .then(r => r.json())
-      .then(data => {
-        setAssignment(data)
-        if (data.submissions?.[0]?.textContent) {
-          setText(data.submissions[0].textContent)
-        }
-        setLoading(false)
-      })
+  const fetchAssignment = useCallback(async () => {
+    const res = await fetch(`/api/assignments/${params.id}`)
+    const data = await res.json()
+    setAssignment(data)
+    if (data.submissions?.[0]?.textContent) setText(data.submissions[0].textContent)
+    setLoading(false)
   }, [params.id])
 
-  const submit = async () => {
-    if (!text.trim()) { toast.error("Введіть текст відповіді"); return }
-    setSubmitting(true)
-    const res = await fetch("/api/submissions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ assignmentId: params.id, textContent: text }),
+  useEffect(() => { fetchAssignment() }, [fetchAssignment])
+
+  const addFiles = (newFiles: FileList | null) => {
+    if (!newFiles) return
+    const valid = Array.from(newFiles).filter(f => {
+      if (f.size > MAX_FILE_SIZE) { toast.error(`${f.name}: файл занадто великий`); return false }
+      if (!ALLOWED_MIME_TYPES.includes(f.type)) { toast.error(`${f.name}: непідтримуваний тип файлу`); return false }
+      return true
     })
-    if (res.ok) {
-      toast.success("Роботу здано!")
-      const refreshed = await fetch(`/api/assignments/${params.id}`)
-      setAssignment(await refreshed.json())
-    } else {
-      toast.error("Помилка при здачі")
+    setFiles(prev => [...prev, ...valid])
+  }
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const uploadFile = async (file: File): Promise<{ url: string; fileName: string; fileType: string } | null> => {
+    const fd = new FormData()
+    fd.append("file", file)
+    const res = await fetch("/api/upload", { method: "POST", body: fd })
+    if (!res.ok) { toast.error(`Помилка завантаження ${file.name}`); return null }
+    return res.json()
+  }
+
+  const submit = async () => {
+    if (!text.trim() && files.length === 0) { toast.error("Введіть текст або прикріпіть файл"); return }
+    setSubmitting(true)
+    setUploading(files.length > 0)
+    try {
+      const uploadedAttachments = []
+      for (const file of files) {
+        const result = await uploadFile(file)
+        if (result) uploadedAttachments.push(result)
+      }
+      setUploading(false)
+
+      const res = await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ assignmentId: params.id, textContent: text, attachments: uploadedAttachments }),
+      })
+      if (res.ok) {
+        toast.success("Роботу здано!")
+        setFiles([])
+        await fetchAssignment()
+      } else {
+        toast.error("Помилка при здачі")
+      }
+    } finally {
+      setSubmitting(false)
+      setUploading(false)
     }
-    setSubmitting(false)
   }
 
   if (loading) return <div className="p-8 text-gray-500">Завантаження...</div>
@@ -78,7 +113,22 @@ export default function StudentAssignmentPage() {
         {assignment.description && (
           <p className="text-gray-600 mb-4 whitespace-pre-wrap leading-relaxed">{assignment.description}</p>
         )}
-        <div className="flex gap-6 text-sm text-gray-500">
+        {assignment.attachments?.length > 0 && (
+          <div className="mt-3 p-3 bg-sky-light rounded-lg">
+            <p className="text-sm font-medium text-sky-darker mb-2">Матеріали від вчителя:</p>
+            <div className="space-y-1">
+              {assignment.attachments.map((att: any) => (
+                <a key={att.id} href={att.fileUrl} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm text-sky-darker hover:underline">
+                  {att.fileType.startsWith("image/") ? <ImageIcon className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
+                  {att.fileName}
+                  <Download className="w-3 h-3" />
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+        <div className="flex gap-6 text-sm text-gray-500 mt-4">
           <span className={`flex items-center gap-1 ${isOverdue ? "text-red-500" : ""}`}>
             {isOverdue ? <AlertCircle className="w-4 h-4" /> : <Calendar className="w-4 h-4" />}
             {format(dueDate, "d MMMM yyyy, HH:mm", { locale: uk })}
@@ -88,13 +138,6 @@ export default function StudentAssignmentPage() {
             Максимум: {assignment.maxGrade} балів
           </span>
         </div>
-        {assignment.assignmentGroups?.length > 0 && (
-          <div className="mt-3 flex gap-2 flex-wrap">
-            {assignment.assignmentGroups.map((ag: any) => (
-              <span key={ag.id} className="text-xs bg-sky-light text-sky-darker px-2 py-1 rounded-full">{ag.group.name}</span>
-            ))}
-          </div>
-        )}
       </div>
 
       {isGraded && submission?.grade && (
@@ -124,18 +167,79 @@ export default function StudentAssignmentPage() {
             {submission.textContent}
           </div>
         )}
+        {submission?.attachments?.length > 0 && (
+          <div className="mb-4 p-3 bg-sky-light rounded-lg">
+            <p className="text-sm font-medium text-sky-darker mb-2">Прикріплені файли:</p>
+            <div className="space-y-2">
+              {submission.attachments.map((att: any) => (
+                <div key={att.id} className="flex items-center gap-2">
+                  {att.fileType.startsWith("image/") ? (
+                    <div>
+                      <img src={att.fileUrl} alt={att.fileName} className="max-h-40 rounded-lg border border-gray-200" />
+                      <a href={att.fileUrl} target="_blank" rel="noopener noreferrer"
+                        className="text-xs text-sky-darker hover:underline mt-1 flex items-center gap-1">
+                        <Download className="w-3 h-3" /> {att.fileName}
+                      </a>
+                    </div>
+                  ) : (
+                    <a href={att.fileUrl} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-sky-darker hover:underline">
+                      <FileText className="w-4 h-4" />
+                      {att.fileName}
+                      <Download className="w-3 h-3" />
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         {!isGraded && (
           <>
             <Textarea
               value={text}
               onChange={e => setText(e.target.value)}
               placeholder="Введіть вашу відповідь тут..."
-              rows={8}
+              rows={6}
               className="mb-4"
             />
+            <div className="mb-4">
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept={ALLOWED_FILE_ACCEPT}
+                className="hidden"
+                onChange={e => addFiles(e.target.files)}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2 mb-2"
+              >
+                <Paperclip className="w-4 h-4" />
+                Прикріпити файл
+              </Button>
+              {files.length > 0 && (
+                <div className="space-y-2 mt-2">
+                  {files.map((file, i) => (
+                    <div key={i} className="flex items-center gap-2 bg-sky-light px-3 py-1.5 rounded-lg text-sm">
+                      {file.type.startsWith("image/") ? <ImageIcon className="w-4 h-4 text-sky-darker" /> : <FileText className="w-4 h-4 text-sky-darker" />}
+                      <span className="flex-1 text-gray-700 truncate">{file.name}</span>
+                      <span className="text-gray-400 text-xs">{(file.size / 1024).toFixed(0)} KB</span>
+                      <button onClick={() => removeFile(i)} className="text-gray-400 hover:text-red-500">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="flex gap-3">
-              <Button onClick={submit} disabled={submitting} className="bg-sky-custom hover:bg-sky-dark">
-                {submitting ? "Здача..." : submission ? "Оновити відповідь" : "Здати завдання"}
+              <Button onClick={submit} disabled={submitting} className="bg-sky-custom hover:bg-sky-dark text-sky-darker">
+                {uploading ? "Завантаження..." : submitting ? "Здача..." : submission ? "Оновити відповідь" : "Здати завдання"}
               </Button>
               {submission && (
                 <span className="text-sm text-gray-500 self-center">
@@ -149,3 +253,4 @@ export default function StudentAssignmentPage() {
     </div>
   )
 }
+
