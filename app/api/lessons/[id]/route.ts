@@ -29,13 +29,22 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const { id } = await params
 
   const body = await request.json()
+
+  let parsedDate: Date | undefined
+  if (body.date) {
+    parsedDate = new Date(body.date)
+    if (isNaN(parsedDate.getTime())) {
+      return NextResponse.json({ error: "Невірна дата" }, { status: 400 })
+    }
+  }
+
   const lesson = await prisma.lesson.update({
     where: { id },
     data: {
       title: body.title,
       theme: body.theme || null,
       description: body.description || null,
-      date: body.date ? new Date(body.date) : undefined,
+      date: parsedDate,
       startTime: body.startTime,
       endTime: body.endTime,
       meetLink: body.meetLink || null,

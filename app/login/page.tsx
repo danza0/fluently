@@ -60,7 +60,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-10 h-10 bg-milk rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-sky-custom rounded-xl flex items-center justify-center">
               <GraduationCap className="w-6 h-6 text-white" />
             </div>
             <span className="text-2xl font-bold text-gray-900">Fluently</span>
@@ -86,7 +86,7 @@ export default function LoginPage() {
               </div>
               {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
             </div>
-            <Button type="submit" disabled={isLoading} className="w-full bg-milk hover:bg-milk-dark rounded-xl h-11">
+            <Button type="submit" disabled={isLoading} className="w-full bg-sky-custom hover:bg-sky-dark rounded-xl h-11">
               {isLoading ? "Вхід..." : "Увійти"}
             </Button>
           </form>

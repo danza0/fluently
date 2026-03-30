@@ -4,14 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { writeFile, mkdir } from "fs/promises"
 import { join } from "path"
 import { nanoid } from "nanoid"
-
-const MAX_FILE_SIZE = 10 * 1024 * 1024
-const ALLOWED_TYPES = [
-  "image/jpeg", "image/jpg", "image/png",
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-]
+import { MAX_FILE_SIZE, ALLOWED_MIME_TYPES } from "@/lib/upload-config"
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
@@ -26,14 +19,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Файл занадто великий (максимум 10MB)" }, { status: 400 })
     }
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
       return NextResponse.json({ error: "Непідтримуваний тип файлу" }, { status: 400 })
     }
 
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    const ext = file.name.split(".").pop() || "bin"
     const MIME_TO_EXT: Record<string, string> = {
       "image/jpeg": "jpg",
       "image/jpg": "jpg",

@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { format } from "date-fns"
 import { uk } from "date-fns/locale"
 import { StatusBadge } from "@/components/assignments/status-badge"
+import { MAX_FILE_SIZE, ALLOWED_MIME_TYPES, ALLOWED_FILE_ACCEPT } from "@/lib/upload-config"
 
 export default function StudentAssignmentPage() {
   const params = useParams()
@@ -34,9 +35,8 @@ export default function StudentAssignmentPage() {
   const addFiles = (newFiles: FileList | null) => {
     if (!newFiles) return
     const valid = Array.from(newFiles).filter(f => {
-      if (f.size > 10 * 1024 * 1024) { toast.error(`${f.name}: файл занадто великий`); return false }
-      const allowed = ["image/jpeg","image/jpg","image/png","application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
-      if (!allowed.includes(f.type)) { toast.error(`${f.name}: непідтримуваний тип файлу`); return false }
+      if (f.size > MAX_FILE_SIZE) { toast.error(`${f.name}: файл занадто великий`); return false }
+      if (!ALLOWED_MIME_TYPES.includes(f.type)) { toast.error(`${f.name}: непідтримуваний тип файлу`); return false }
       return true
     })
     setFiles(prev => [...prev, ...valid])
@@ -208,7 +208,7 @@ export default function StudentAssignmentPage() {
                 ref={fileInputRef}
                 type="file"
                 multiple
-                accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+                accept={ALLOWED_FILE_ACCEPT}
                 className="hidden"
                 onChange={e => addFiles(e.target.files)}
               />
