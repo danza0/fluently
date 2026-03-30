@@ -94,7 +94,7 @@ export default function StudentDiaryPage() {
               </div>
             )}
           </div>
-          {myAttendance !== undefined && myAttendance !== null && (
+          {myAttendance != null && (
             <div className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full ml-4 ${
               myAttendance.present ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"
             }`}>

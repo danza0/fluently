@@ -12,6 +12,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const body = await request.json()
 
+  if (!Array.isArray(body.attendance)) {
+    return NextResponse.json({ error: "attendance must be an array" }, { status: 400 })
+  }
+
   const results = await Promise.all(
     body.attendance.map(async (record: { studentId: string; present: boolean; note?: string }) => {
       return prisma.attendanceRecord.upsert({

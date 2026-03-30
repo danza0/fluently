@@ -34,7 +34,16 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(bytes)
 
     const ext = file.name.split(".").pop() || "bin"
-    const fileName = `${nanoid()}.${ext}`
+    const MIME_TO_EXT: Record<string, string> = {
+      "image/jpeg": "jpg",
+      "image/jpg": "jpg",
+      "image/png": "png",
+      "application/pdf": "pdf",
+      "application/msword": "doc",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+    }
+    const safeExt = MIME_TO_EXT[file.type] ?? "bin"
+    const fileName = `${nanoid()}.${safeExt}`
     const uploadsDir = join(process.cwd(), "public", "uploads")
 
     await mkdir(uploadsDir, { recursive: true })

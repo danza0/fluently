@@ -35,12 +35,19 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json()
+    if (!body.title || !body.date || !body.startTime || !body.endTime || !body.groupId) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+    const parsedDate = new Date(body.date)
+    if (isNaN(parsedDate.getTime())) {
+      return NextResponse.json({ error: "Invalid date" }, { status: 400 })
+    }
     const lesson = await prisma.lesson.create({
       data: {
         title: body.title,
         theme: body.theme || null,
         description: body.description || null,
-        date: new Date(body.date),
+        date: parsedDate,
         startTime: body.startTime,
         endTime: body.endTime,
         meetLink: body.meetLink || null,

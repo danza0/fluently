@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -21,15 +21,15 @@ export default function StudentAssignmentPage() {
   const [submitting, setSubmitting] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const fetchAssignment = async () => {
+  const fetchAssignment = useCallback(async () => {
     const res = await fetch(`/api/assignments/${params.id}`)
     const data = await res.json()
     setAssignment(data)
     if (data.submissions?.[0]?.textContent) setText(data.submissions[0].textContent)
     setLoading(false)
-  }
+  }, [params.id])
 
-  useEffect(() => { fetchAssignment() }, [params.id])
+  useEffect(() => { fetchAssignment() }, [fetchAssignment])
 
   const addFiles = (newFiles: FileList | null) => {
     if (!newFiles) return
