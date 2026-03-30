@@ -2,24 +2,24 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --card: #ffffff;
-  --card-foreground: #171717;
-  --popover: #ffffff;
-  --popover-foreground: #171717;
+  --background: #FFFDF8;
+  --foreground: #111111;
+  --card: #FFFFFF;
+  --card-foreground: #111111;
+  --popover: #FFFFFF;
+  --popover-foreground: #111111;
   --primary: #BED9F4;
   --primary-foreground: #1e3a52;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  --secondary: #EBF5FD;
+  --secondary-foreground: #1e3a52;
+  --muted: #EBF5FD;
+  --muted-foreground: #5B9BD1;
   --accent: #BED9F4;
   --accent-foreground: #1e3a52;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
+  --border: #D5EAFB;
+  --input: #D5EAFB;
   --ring: #BED9F4;
   --radius: 0.5rem;
 }
@@ -33,9 +33,9 @@
   --color-sky-mid: #D5EAFB;
   --color-sky-dark: #5B9BD1;
   --color-sky-darker: #3A7AA8;
-  --color-milk: #EC5E27;
-  --color-milk-dark: #c94d18;
-  --color-milk-light: #FDF0EA;
+  --color-milk: #FFFDF8;
+  --color-milk-dark: #F5F0E8;
+  --color-milk-light: #FFFFFF;
 }
 
 * {

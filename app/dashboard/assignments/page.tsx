@@ -3,8 +3,8 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { AssignmentCard } from "@/components/assignments/assignment-card"
 import { Plus, BookOpen } from "lucide-react"
+import { AssignmentsClientList } from "./client-list"
 
 export default async function AssignmentsPage() {
   const session = await getServerSession(authOptions)
@@ -19,10 +19,6 @@ export default async function AssignmentsPage() {
     },
     orderBy: { dueDate: "asc" },
   })
-
-  const now = new Date()
-  const upcoming = assignments.filter(a => new Date(a.dueDate) >= now)
-  const past = assignments.filter(a => new Date(a.dueDate) < now)
 
   return (
     <div className="p-8">
@@ -49,25 +45,9 @@ export default async function AssignmentsPage() {
           </Link>
         </div>
       ) : (
-        <>
-          {upcoming.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Активні ({upcoming.length})</h2>
-              <div className="grid gap-4">
-                {upcoming.map(a => <AssignmentCard key={a.id} assignment={a as any} role="TEACHER" />)}
-              </div>
-            </div>
-          )}
-          {past.length > 0 && (
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Минулі ({past.length})</h2>
-              <div className="grid gap-4 opacity-75">
-                {past.map(a => <AssignmentCard key={a.id} assignment={a as any} role="TEACHER" />)}
-              </div>
-            </div>
-          )}
-        </>
+        <AssignmentsClientList assignments={assignments as any} />
       )}
     </div>
   )
 }
+

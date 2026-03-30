@@ -55,7 +55,7 @@ export default async function DashboardPage() {
             <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500">Немає завдань. Створіть перше!</p>
             <Link href="/dashboard/assignments/new">
-              <Button className="mt-4 bg-milk hover:bg-milk-dark">Створити завдання</Button>
+              <Button className="mt-4 bg-sky-custom hover:bg-sky-dark text-sky-darker">Створити завдання</Button>
             </Link>
           </div>
         ) : (

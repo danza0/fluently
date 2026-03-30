@@ -12,6 +12,7 @@ const createAssignmentSchema = z.object({
   submissionType: z.enum(["TEXT", "IMAGE", "FILE", "MIXED"]).default("MIXED"),
   groupIds: z.array(z.string()).optional(),
   studentIds: z.array(z.string()).optional(),
+  attachments: z.array(z.object({ url: z.string(), fileName: z.string(), fileType: z.string() })).optional(),
 })
 
 export async function GET() {
@@ -82,6 +83,13 @@ export async function POST(request: Request) {
         } : undefined,
         assignmentStudents: data.studentIds?.length ? {
           create: data.studentIds.map((studentId) => ({ studentId })),
+        } : undefined,
+        attachments: data.attachments?.length ? {
+          create: data.attachments.map(a => ({
+            fileUrl: a.url,
+            fileName: a.fileName,
+            fileType: a.fileType,
+          })),
         } : undefined,
       },
       include: {
