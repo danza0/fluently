@@ -55,7 +55,7 @@ export default function StudentGroupsPage() {
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-500 hover:bg-blue-600 gap-2">
+            <Button className="bg-sky-custom hover:bg-sky-dark gap-2">
               <Plus className="w-4 h-4" />
               Приєднатися до групи
             </Button>
@@ -72,7 +72,7 @@ export default function StudentGroupsPage() {
                 onChange={e => setJoinCode(e.target.value.toUpperCase())}
                 className="font-mono uppercase"
               />
-              <Button type="submit" disabled={joining} className="w-full bg-blue-500 hover:bg-blue-600">
+              <Button type="submit" disabled={joining} className="w-full bg-sky-custom hover:bg-sky-dark">
                 {joining ? "Приєднання..." : "Приєднатися"}
               </Button>
             </form>
@@ -85,7 +85,7 @@ export default function StudentGroupsPage() {
           <Users className="w-16 h-16 text-gray-200 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Ви не в жодній групі</h3>
           <p className="text-gray-500 mb-6">Попросіть вчителя надати код для вступу</p>
-          <Button className="bg-blue-500 hover:bg-blue-600" onClick={() => setDialogOpen(true)}>Приєднатися до групи</Button>
+          <Button className="bg-sky-custom hover:bg-sky-dark" onClick={() => setDialogOpen(true)}>Приєднатися до групи</Button>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

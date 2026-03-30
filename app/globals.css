@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -7,25 +8,34 @@
   --card-foreground: #171717;
   --popover: #ffffff;
   --popover-foreground: #171717;
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
+  --primary: #BED9F4;
+  --primary-foreground: #1e3a52;
   --secondary: #f1f5f9;
   --secondary-foreground: #0f172a;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
+  --accent: #BED9F4;
+  --accent-foreground: #1e3a52;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #3b82f6;
+  --ring: #BED9F4;
   --radius: 0.5rem;
 }
 
 @theme inline {
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-sky-custom: #BED9F4;
+  --color-sky-light: #EBF5FD;
+  --color-sky-mid: #D5EAFB;
+  --color-sky-dark: #5B9BD1;
+  --color-sky-darker: #3A7AA8;
+  --color-milk: #EC5E27;
+  --color-milk-dark: #c94d18;
+  --color-milk-light: #FDF0EA;
 }
 
 * {

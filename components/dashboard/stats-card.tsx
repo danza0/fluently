@@ -11,7 +11,7 @@ interface StatsCardProps {
   trend?: string
 }
 
-export function StatsCard({ title, value, description, icon: Icon, iconColor = "text-blue-600", iconBg = "bg-blue-100", trend }: StatsCardProps) {
+export function StatsCard({ title, value, description, icon: Icon, iconColor = "text-sky-darker", iconBg = "bg-sky-mid", trend }: StatsCardProps) {
   return (
     <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">

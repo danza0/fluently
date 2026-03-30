@@ -53,8 +53,8 @@ export default async function StudentCalendarPage() {
           {days.map(day => {
             const dayAssignments = assignments.filter(a => isSameDay(new Date(a.dueDate), day))
             return (
-              <div key={day.toISOString()} className={`min-h-[80px] p-1.5 rounded-lg border ${isToday(day) ? "bg-blue-50 border-blue-200" : "border-transparent hover:bg-gray-50"}`}>
-                <div className={`text-sm font-medium mb-1 ${isToday(day) ? "text-blue-600" : "text-gray-700"}`}>
+              <div key={day.toISOString()} className={`min-h-[80px] p-1.5 rounded-lg border ${isToday(day) ? "bg-sky-light border-blue-200" : "border-transparent hover:bg-gray-50"}`}>
+                <div className={`text-sm font-medium mb-1 ${isToday(day) ? "text-sky-darker" : "text-gray-700"}`}>
                   {format(day, "d")}
                 </div>
                 {dayAssignments.map(a => (
@@ -79,7 +79,7 @@ export default async function StudentCalendarPage() {
             {assignments.map(a => (
               <Link key={a.id} href={`/student/assignments/${a.id}`} className="flex items-center gap-4 py-2 hover:bg-gray-50 rounded-lg px-2">
                 <div className="text-center min-w-[48px]">
-                  <div className="text-2xl font-bold text-blue-600">{format(new Date(a.dueDate), "d")}</div>
+                  <div className="text-2xl font-bold text-sky-darker">{format(new Date(a.dueDate), "d")}</div>
                   <div className="text-xs text-gray-400">{format(new Date(a.dueDate), "EEE", { locale: uk })}</div>
                 </div>
                 <div className="flex-1">

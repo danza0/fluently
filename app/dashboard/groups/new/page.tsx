@@ -52,7 +52,7 @@ export default function NewGroupPage() {
             <Textarea id="description" placeholder="Короткий опис групи..." value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
           </div>
           <div className="flex gap-3">
-            <Button type="submit" disabled={isLoading} className="bg-blue-500 hover:bg-blue-600">
+            <Button type="submit" disabled={isLoading} className="bg-sky-custom hover:bg-sky-dark">
               {isLoading ? "Створення..." : "Створити групу"}
             </Button>
             <Link href="/dashboard/groups">

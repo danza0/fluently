@@ -91,7 +91,7 @@ export default function StudentAssignmentPage() {
         {assignment.assignmentGroups?.length > 0 && (
           <div className="mt-3 flex gap-2 flex-wrap">
             {assignment.assignmentGroups.map((ag: any) => (
-              <span key={ag.id} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">{ag.group.name}</span>
+              <span key={ag.id} className="text-xs bg-sky-light text-sky-darker px-2 py-1 rounded-full">{ag.group.name}</span>
             ))}
           </div>
         )}
@@ -134,7 +134,7 @@ export default function StudentAssignmentPage() {
               className="mb-4"
             />
             <div className="flex gap-3">
-              <Button onClick={submit} disabled={submitting} className="bg-blue-500 hover:bg-blue-600">
+              <Button onClick={submit} disabled={submitting} className="bg-sky-custom hover:bg-sky-dark">
                 {submitting ? "Здача..." : submission ? "Оновити відповідь" : "Здати завдання"}
               </Button>
               {submission && (

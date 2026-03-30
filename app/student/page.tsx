@@ -50,7 +50,7 @@ export default async function StudentDashboard() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatsCard title="Активні завдання" value={pending.length} icon={Clock} iconColor="text-orange-600" iconBg="bg-orange-100" />
-        <StatsCard title="Здано" value={submitted.length} icon={CheckCircle} iconColor="text-blue-600" iconBg="bg-blue-100" />
+        <StatsCard title="Здано" value={submitted.length} icon={CheckCircle} iconColor="text-sky-darker" iconBg="bg-sky-mid" />
         <StatsCard title="Оцінено" value={graded.length} icon={BookOpen} iconColor="text-green-600" iconBg="bg-green-100" />
         <StatsCard title="Середній бал" value={avgGrade} icon={Star} iconColor="text-yellow-600" iconBg="bg-yellow-100" />
       </div>

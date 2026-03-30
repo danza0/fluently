@@ -18,32 +18,32 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-blue-100">
+      <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-sky-mid">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-milk rounded-lg flex items-center justify-center">
               <GraduationCap className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold text-gray-900">Fluently</span>
           </div>
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors text-sm">Переваги</a>
-            <a href="#how-it-works" className="text-gray-600 hover:text-blue-600 transition-colors text-sm">Як це працює</a>
-            <a href="#testimonials" className="text-gray-600 hover:text-blue-600 transition-colors text-sm">Відгуки</a>
+            <a href="#features" className="text-gray-600 hover:text-sky-darker transition-colors text-sm">Переваги</a>
+            <a href="#how-it-works" className="text-gray-600 hover:text-sky-darker transition-colors text-sm">Як це працює</a>
+            <a href="#testimonials" className="text-gray-600 hover:text-sky-darker transition-colors text-sm">Відгуки</a>
           </nav>
           <div className="flex items-center gap-3">
             <Link href="/login">
               <Button variant="ghost" className="text-gray-700">Увійти</Button>
             </Link>
             <Link href="/register">
-              <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl">Спробувати</Button>
+              <Button className="bg-milk hover:bg-milk-dark text-white rounded-xl">Спробувати</Button>
             </Link>
           </div>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="pt-24 pb-20 px-4 bg-gradient-to-br from-blue-50 via-white to-blue-50">
+      <section className="pt-24 pb-20 px-4 bg-gradient-to-br from-sky-light via-white to-sky-light">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
@@ -51,26 +51,26 @@ export default function HomePage() {
             variants={stagger}
             className="text-center max-w-4xl mx-auto"
           >
-            <motion.div variants={fadeIn} className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 rounded-full px-4 py-1.5 text-sm font-medium mb-6">
+            <motion.div variants={fadeIn} className="inline-flex items-center gap-2 bg-sky-mid text-sky-darker rounded-full px-4 py-1.5 text-sm font-medium mb-6">
               <Star className="w-4 h-4" />
               Преміум платформа для навчання англійської
             </motion.div>
             <motion.h1 variants={fadeIn} className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight mb-6">
               Вивчай англійську{" "}
-              <span className="text-blue-500">з задоволенням</span>
+              <span className="text-sky-dark">з задоволенням</span>
             </motion.h1>
             <motion.p variants={fadeIn} className="text-xl text-gray-600 mb-10 leading-relaxed max-w-2xl mx-auto">
               Інтерактивна платформа для дітей та дорослих. Домашні завдання, оцінки, зворотній зв&apos;язок — все в одному місці.
             </motion.p>
             <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/register">
-                <Button size="lg" className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl px-8 h-12 text-base">
+                <Button size="lg" className="bg-milk hover:bg-milk-dark text-white rounded-xl px-8 h-12 text-base">
                   Спробувати платформу
                   <ChevronRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
               <Link href="/login">
-                <Button size="lg" variant="outline" className="border-blue-200 text-blue-600 hover:bg-blue-50 rounded-xl px-8 h-12 text-base">
+                <Button size="lg" variant="outline" className="border-sky-custom text-sky-darker hover:bg-sky-light rounded-xl px-8 h-12 text-base">
                   Увійти до кабінету
                 </Button>
               </Link>
@@ -90,7 +90,7 @@ export default function HomePage() {
               { value: "100%", label: "Задоволених учнів" },
             ].map((stat) => (
               <motion.div key={stat.label} variants={fadeIn} className="text-center">
-                <div className="text-3xl font-bold text-blue-600">{stat.value}</div>
+                <div className="text-3xl font-bold text-sky-darker">{stat.value}</div>
                 <div className="text-gray-500 text-sm mt-1">{stat.label}</div>
               </motion.div>
             ))}
@@ -132,9 +132,9 @@ export default function HomePage() {
               <motion.div
                 key={feature.title}
                 variants={fadeIn}
-                className="bg-blue-50 rounded-2xl p-6 hover:shadow-md transition-shadow"
+                className="bg-sky-light rounded-2xl p-6 hover:shadow-md transition-shadow"
               >
-                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4">
+                <div className="w-12 h-12 bg-milk rounded-xl flex items-center justify-center mb-4">
                   <feature.icon className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
@@ -146,7 +146,7 @@ export default function HomePage() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="py-20 px-4 bg-gradient-to-br from-blue-50 to-white">
+      <section id="how-it-works" className="py-20 px-4 bg-gradient-to-br from-sky-light to-white">
         <div className="max-w-7xl mx-auto">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-16">
             <motion.h2 variants={fadeIn} className="text-4xl font-bold text-gray-900 mb-4">Як це працює</motion.h2>
@@ -154,7 +154,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-16 items-start">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
               <h3 className="text-2xl font-bold text-gray-900 mb-8">
-                <span className="bg-blue-500 text-white rounded-lg px-3 py-1 text-sm mr-2">Вчитель</span>
+                <span className="bg-milk text-white rounded-lg px-3 py-1 text-sm mr-2">Вчитель</span>
               </h3>
               {[
                 { step: "01", title: "Створює групи", desc: "Окрема група для кожного класу з кодом для приєднання" },
@@ -163,7 +163,7 @@ export default function HomePage() {
                 { step: "04", title: "Перевіряє та оцінює", desc: "Переглядає роботи, ставить оцінки, залишає коментарі" },
               ].map((item) => (
                 <motion.div key={item.step} variants={fadeIn} className="flex gap-4 mb-6">
-                  <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0">
+                  <div className="w-10 h-10 bg-sky-mid text-sky-darker rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0">
                     {item.step}
                   </div>
                   <div>
@@ -210,7 +210,7 @@ export default function HomePage() {
               { name: "Олексій Т.", role: "Учень, дорослий курс", text: "Дуже зручно, що вчитель може залишати детальні коментарі. Завжди знаю, що покращити." },
               { name: "Анна М.", role: "Учениця, 8 клас", text: "Подобається, що видно статус завдання — здано, оцінено або не здано. Не можна нічого пропустити!" },
             ].map((t) => (
-              <motion.div key={t.name} variants={fadeIn} className="bg-white rounded-2xl p-6 shadow-sm border border-blue-100">
+              <motion.div key={t.name} variants={fadeIn} className="bg-white rounded-2xl p-6 shadow-sm border border-sky-mid">
                 <div className="flex gap-1 mb-4">
                   {[1, 2, 3, 4, 5].map((i) => <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />)}
                 </div>
@@ -226,13 +226,13 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-4 bg-gradient-to-r from-blue-500 to-blue-600">
+      <section className="py-20 px-4 bg-gradient-to-r from-milk to-milk-dark">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="max-w-4xl mx-auto text-center text-white">
           <motion.h2 variants={fadeIn} className="text-4xl font-bold mb-4">Готові почати?</motion.h2>
-          <motion.p variants={fadeIn} className="text-blue-100 text-lg mb-8">Приєднуйтесь до платформи вже сьогодні</motion.p>
+          <motion.p variants={fadeIn} className="text-sky-light text-lg mb-8">Приєднуйтесь до платформи вже сьогодні</motion.p>
           <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 rounded-xl px-8 h-12">
+              <Button size="lg" className="bg-white text-sky-darker hover:bg-sky-light rounded-xl px-8 h-12">
                 Зареєструватися
               </Button>
             </Link>
@@ -249,7 +249,7 @@ export default function HomePage() {
       <footer className="py-12 px-4 bg-gray-900 text-gray-400">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-milk rounded-lg flex items-center justify-center">
               <GraduationCap className="w-5 h-5 text-white" />
             </div>
             <span className="text-white font-bold text-xl">Fluently</span>

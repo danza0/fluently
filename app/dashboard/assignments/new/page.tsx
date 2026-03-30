@@ -111,7 +111,7 @@ export default function NewAssignmentPage() {
             </div>
           )}
           <div className="flex gap-3 pt-2">
-            <Button type="submit" disabled={isLoading} className="bg-blue-500 hover:bg-blue-600">
+            <Button type="submit" disabled={isLoading} className="bg-sky-custom hover:bg-sky-dark">
               {isLoading ? "Створення..." : "Створити завдання"}
             </Button>
             <Link href="/dashboard/assignments">

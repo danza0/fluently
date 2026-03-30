@@ -32,7 +32,7 @@ export default async function AssignmentsPage() {
           <p className="text-gray-500 mt-1">Всі ваші завдання для учнів</p>
         </div>
         <Link href="/dashboard/assignments/new">
-          <Button className="bg-blue-500 hover:bg-blue-600 gap-2">
+          <Button className="bg-sky-custom hover:bg-sky-dark gap-2">
             <Plus className="w-4 h-4" />
             Нове завдання
           </Button>
@@ -45,7 +45,7 @@ export default async function AssignmentsPage() {
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Немає завдань</h3>
           <p className="text-gray-500 mb-6">Створіть перше завдання для учнів</p>
           <Link href="/dashboard/assignments/new">
-            <Button className="bg-blue-500 hover:bg-blue-600">Створити завдання</Button>
+            <Button className="bg-sky-custom hover:bg-sky-dark">Створити завдання</Button>
           </Link>
         </div>
       ) : (
