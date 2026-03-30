@@ -39,7 +39,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const body = await request.json()
   const group = await prisma.group.update({
     where: { id },
-    data: { name: body.name, description: body.description },
+    data: {
+      name: body.name,
+      description: body.description,
+      ...("logo" in body && { logo: body.logo }),
+      ...("coverImage" in body && { coverImage: body.coverImage }),
+    },
   })
   return NextResponse.json(group)
 }

@@ -8,7 +8,7 @@ interface StatusBadgeProps {
 
 const statusConfig = {
   PENDING: { label: "Очікує", className: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100" },
-  SUBMITTED: { label: "Здано", className: "bg-blue-100 text-blue-800 hover:bg-blue-100" },
+  SUBMITTED: { label: "Здано", className: "bg-sky-mid text-blue-800 hover:bg-sky-mid" },
   GRADED: { label: "Оцінено", className: "bg-green-100 text-green-800 hover:bg-green-100" },
   LATE: { label: "Прострочено", className: "bg-red-100 text-red-800 hover:bg-red-100" },
   NOT_SUBMITTED: { label: "Не здано", className: "bg-gray-100 text-gray-600 hover:bg-gray-100" },

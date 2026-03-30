@@ -46,12 +46,12 @@ export default async function CalendarPage() {
           {days.map(day => {
             const dayAssignments = assignments.filter(a => isSameDay(new Date(a.dueDate), day))
             return (
-              <div key={day.toISOString()} className={`min-h-[80px] p-1.5 rounded-lg border ${isToday(day) ? "bg-blue-50 border-blue-200" : "border-transparent hover:bg-gray-50"}`}>
-                <div className={`text-sm font-medium mb-1 ${isToday(day) ? "text-blue-600" : "text-gray-700"}`}>
+              <div key={day.toISOString()} className={`min-h-[80px] p-1.5 rounded-lg border ${isToday(day) ? "bg-sky-light border-blue-200" : "border-transparent hover:bg-gray-50"}`}>
+                <div className={`text-sm font-medium mb-1 ${isToday(day) ? "text-sky-darker" : "text-gray-700"}`}>
                   {format(day, "d")}
                 </div>
                 {dayAssignments.map(a => (
-                  <div key={a.id} className="text-xs bg-blue-500 text-white rounded px-1 py-0.5 mb-1 truncate">
+                  <div key={a.id} className="text-xs bg-sky-custom text-white rounded px-1 py-0.5 mb-1 truncate">
                     {a.title}
                   </div>
                 ))}
@@ -70,7 +70,7 @@ export default async function CalendarPage() {
             {assignments.map(a => (
               <div key={a.id} className="flex items-center gap-4 py-2">
                 <div className="text-center min-w-[48px]">
-                  <div className="text-2xl font-bold text-blue-600">{format(new Date(a.dueDate), "d")}</div>
+                  <div className="text-2xl font-bold text-sky-darker">{format(new Date(a.dueDate), "d")}</div>
                   <div className="text-xs text-gray-400">{format(new Date(a.dueDate), "EEE", { locale: uk })}</div>
                 </div>
                 <div className="flex-1">

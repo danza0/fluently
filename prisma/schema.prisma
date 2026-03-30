@@ -33,6 +33,7 @@ model User {
   nickname      String    @unique
   role          Role      @default(STUDENT)
   avatar        String?
+  timezone      String?   @default("Europe/Kyiv")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -89,6 +90,8 @@ model Group {
   description String?
   joinCode    String   @unique @default(cuid())
   teacherId   String
+  logo        String?
+  coverImage  String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

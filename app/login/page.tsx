@@ -56,11 +56,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-sky-light to-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-milk rounded-xl flex items-center justify-center">
               <GraduationCap className="w-6 h-6 text-white" />
             </div>
             <span className="text-2xl font-bold text-gray-900">Fluently</span>
@@ -69,7 +69,7 @@ export default function LoginPage() {
           <p className="text-gray-500 mt-1">Введіть ваші дані для входу</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-blue-100 p-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-sky-mid p-8">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email">Електронна пошта</Label>
@@ -86,13 +86,13 @@ export default function LoginPage() {
               </div>
               {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
             </div>
-            <Button type="submit" disabled={isLoading} className="w-full bg-blue-500 hover:bg-blue-600 rounded-xl h-11">
+            <Button type="submit" disabled={isLoading} className="w-full bg-milk hover:bg-milk-dark rounded-xl h-11">
               {isLoading ? "Вхід..." : "Увійти"}
             </Button>
           </form>
           <div className="mt-6 text-center text-sm text-gray-500">
             Немає акаунту?{" "}
-            <Link href="/register" className="text-blue-600 hover:underline font-medium">Зареєструватися</Link>
+            <Link href="/register" className="text-sky-darker hover:underline font-medium">Зареєструватися</Link>
           </div>
         </div>
         <div className="mt-4 text-center text-xs text-gray-400">

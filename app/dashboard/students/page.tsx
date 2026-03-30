@@ -37,8 +37,8 @@ export default async function StudentsPage() {
               return (
                 <div key={student.id} className="flex items-center justify-between p-4 hover:bg-gray-50">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-semibold text-sm">{student.name.charAt(0)}</span>
+                    <div className="w-10 h-10 bg-sky-mid rounded-full flex items-center justify-center">
+                      <span className="text-sky-darker font-semibold text-sm">{student.name.charAt(0)}</span>
                     </div>
                     <div>
                       <div className="font-medium text-gray-900">{student.name}</div>
@@ -55,7 +55,7 @@ export default async function StudentsPage() {
                     </div>
                     <div className="flex flex-wrap gap-1 max-w-xs">
                       {student.groupMemberships.slice(0, 2).map(m => (
-                        <span key={m.id} className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">{m.group.name}</span>
+                        <span key={m.id} className="text-xs bg-sky-light text-sky-darker px-2 py-0.5 rounded-full">{m.group.name}</span>
                       ))}
                       {student.groupMemberships.length > 2 && (
                         <span className="text-xs text-gray-400">+{student.groupMemberships.length - 2}</span>

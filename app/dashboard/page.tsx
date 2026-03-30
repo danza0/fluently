@@ -37,7 +37,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatsCard title="Учні" value={totalStudents} icon={Users} iconColor="text-blue-600" iconBg="bg-blue-100" />
+        <StatsCard title="Учні" value={totalStudents} icon={Users} iconColor="text-sky-darker" iconBg="bg-sky-mid" />
         <StatsCard title="Групи" value={totalGroups} icon={BookOpen} iconColor="text-purple-600" iconBg="bg-purple-100" />
         <StatsCard title="Потребують перевірки" value={pendingGrades} icon={CheckSquare} iconColor="text-orange-600" iconBg="bg-orange-100" />
         <StatsCard title="Середня оцінка" value={avgGrade} icon={Star} iconColor="text-green-600" iconBg="bg-green-100" />
@@ -55,7 +55,7 @@ export default async function DashboardPage() {
             <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500">Немає завдань. Створіть перше!</p>
             <Link href="/dashboard/assignments/new">
-              <Button className="mt-4 bg-blue-500 hover:bg-blue-600">Створити завдання</Button>
+              <Button className="mt-4 bg-milk hover:bg-milk-dark">Створити завдання</Button>
             </Link>
           </div>
         ) : (

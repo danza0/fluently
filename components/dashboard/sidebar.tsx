@@ -19,6 +19,7 @@ const teacherLinks = [
   { href: "/dashboard/students", label: "Учні", icon: User },
   { href: "/dashboard/calendar", label: "Календар", icon: Calendar },
   { href: "/dashboard/analytics", label: "Аналітика", icon: BarChart2 },
+  { href: "/dashboard/profile", label: "Профіль", icon: User },
 ]
 
 const studentLinks = [
@@ -36,7 +37,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
     <aside className="w-64 min-h-screen bg-white border-r border-gray-100 flex flex-col">
       <div className="p-6 border-b border-gray-100">
         <Link href={role === "TEACHER" ? "/dashboard" : "/student"} className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-milk rounded-lg flex items-center justify-center">
             <GraduationCap className="w-5 h-5 text-white" />
           </div>
           <span className="text-lg font-bold text-gray-900">Fluently</span>
@@ -53,7 +54,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-blue-50 text-blue-700"
+                  ? "bg-sky-custom text-sky-darker"
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
               )}
             >

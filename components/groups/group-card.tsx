@@ -11,6 +11,7 @@ interface GroupCardProps {
     name: string
     description?: string | null
     joinCode: string
+    logo?: string | null
     memberships?: { id: string }[]
     assignmentGroups?: { id: string }[]
   }
@@ -30,7 +31,16 @@ export function GroupCard({ group, role = "STUDENT" }: GroupCardProps) {
     <div className="bg-white rounded-xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
       <Link href={href}>
         <div className="mb-3">
-          <h3 className="font-semibold text-gray-900 text-lg mb-1">{group.name}</h3>
+          <div className="flex items-center gap-3 mb-1">
+            {group.logo ? (
+              <img src={group.logo} alt={group.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+            ) : (
+              <div className="w-10 h-10 bg-sky-custom rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-sky-darker font-bold text-lg">{group.name.charAt(0)}</span>
+              </div>
+            )}
+            <h3 className="font-semibold text-gray-900 text-lg">{group.name}</h3>
+          </div>
           {group.description && <p className="text-sm text-gray-500 line-clamp-2">{group.description}</p>}
         </div>
         <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
@@ -47,7 +57,7 @@ export function GroupCard({ group, role = "STUDENT" }: GroupCardProps) {
       {role === "TEACHER" && (
         <div className="flex items-center gap-2 pt-3 border-t border-gray-50">
           <span className="text-xs text-gray-400">Код:</span>
-          <code className="text-sm font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{group.joinCode}</code>
+          <code className="text-sm font-mono font-bold text-sky-darker bg-sky-light px-2 py-0.5 rounded">{group.joinCode}</code>
           <Button variant="ghost" size="icon" className="h-7 w-7 ml-auto" onClick={copyCode}>
             <Copy className="w-3 h-3" />
           </Button>

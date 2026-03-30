@@ -80,7 +80,7 @@ export default function AssignmentDetailPage() {
         {assignment.assignmentGroups?.length > 0 && (
           <div className="mt-3 flex gap-2 flex-wrap">
             {assignment.assignmentGroups.map((ag: any) => (
-              <span key={ag.id} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">{ag.group.name}</span>
+              <span key={ag.id} className="text-xs bg-sky-light text-sky-darker px-2 py-1 rounded-full">{ag.group.name}</span>
             ))}
           </div>
         )}
@@ -135,12 +135,12 @@ export default function AssignmentDetailPage() {
                           placeholder="Коментар..." rows={1}
                           className="text-sm"
                         />
-                        <Button size="sm" onClick={() => submitGrade(sub.id)} className="bg-blue-500 hover:bg-blue-600">Оновити</Button>
+                        <Button size="sm" onClick={() => submitGrade(sub.id)} className="bg-sky-custom hover:bg-sky-dark">Оновити</Button>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="border border-blue-100 rounded-lg p-3">
+                  <div className="border border-sky-mid rounded-lg p-3">
                     <p className="text-sm font-medium text-gray-700 mb-2">Виставити оцінку:</p>
                     <div className="flex gap-2">
                       <input
