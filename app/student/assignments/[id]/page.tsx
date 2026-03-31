@@ -256,7 +256,7 @@ export default function StudentAssignmentPage() {
                   <Paperclip className="w-4 h-4" />
                   Завантажити роботу
                 </Button>
-                <p className="text-xs text-gray-400 ml-1">Максимальний розмір файлу: 10 MB</p>
+                <p className="text-xs text-gray-400 ml-1">Максимальний розмір файлу: {MAX_FILE_SIZE / (1024 * 1024)} MB</p>
                 {files.length > 0 && (
                   <div className="space-y-2 mt-3">
                     {files.map((file, i) => (
