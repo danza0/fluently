@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight, Plus, Clock, Users, ExternalLink, BookOpen, Pencil, Trash2, UserCheck, Image } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -9,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Select } from "@/components/ui/select"
 import { toast } from "sonner"
 import { format, addDays, startOfWeek, isToday } from "date-fns"
 import { uk } from "date-fns/locale"
@@ -73,6 +75,7 @@ export default function TimetablePage() {
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [groups, setGroups] = useState<Group[]>([])
   const [loading, setLoading] = useState(true)
+  const [groupsLoading, setGroupsLoading] = useState(true)
   const [formOpen, setFormOpen] = useState(false)
   const [editLesson, setEditLesson] = useState<Lesson | null>(null)
   const [form, setForm] = useState(emptyForm)
@@ -131,6 +134,7 @@ export default function TimetablePage() {
       toast.error("Помилка завантаження даних")
     } finally {
       setLoading(false)
+      setGroupsLoading(false)
     }
   }
 
@@ -439,15 +443,25 @@ export default function TimetablePage() {
               </div>
               <div>
                 <Label htmlFor="groupId">Група *</Label>
-                <select
-                  id="groupId"
-                  value={form.groupId}
-                  onChange={e => setForm(f => ({ ...f, groupId: e.target.value }))}
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                >
-                  <option value="">Обрати групу</option>
-                  {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
-                </select>
+                {groupsLoading ? (
+                  <div className="flex h-9 w-full items-center rounded-md border border-[#BED9F4] bg-[#EBF5FD] px-3 text-sm text-[#3A7AA8]">
+                    Завантаження груп...
+                  </div>
+                ) : groups.length === 0 ? (
+                  <div className="flex h-9 w-full items-center rounded-md border border-[#BED9F4] bg-[#EBF5FD] px-3 text-sm text-[#3A7AA8]">
+                    <span>Немає груп.&nbsp;<Link href="/dashboard/groups" className="underline font-medium hover:text-[#3A7AA8]" aria-label="Перейти на сторінку груп та створити групу">Створіть групу</Link></span>
+                  </div>
+                ) : (
+                  <Select
+                    id="groupId"
+                    value={form.groupId}
+                    onChange={e => setForm(f => ({ ...f, groupId: e.target.value }))}
+                    className="h-9 border-[#BED9F4] focus:ring-[#5B9BD1]"
+                  >
+                    <option value="">Обрати групу</option>
+                    {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                  </Select>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
