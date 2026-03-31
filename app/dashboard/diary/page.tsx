@@ -61,20 +61,26 @@ export default function TeacherDiaryPage() {
   const [savingAttendance, setSavingAttendance] = useState<string | null>(null)
 
   const fetchData = async () => {
-    const [lessonsRes, groupsRes, assignmentsRes] = await Promise.all([
-      fetch("/api/lessons"),
-      fetch("/api/groups"),
-      fetch("/api/assignments"),
-    ])
-    const [lessonsData, groupsData, assignmentsData] = await Promise.all([
-      lessonsRes.json(),
-      groupsRes.json(),
-      assignmentsRes.json(),
-    ])
-    setLessons(lessonsData)
-    setGroups(groupsData)
-    setAssignments(assignmentsData)
-    setLoading(false)
+    try {
+      const [lessonsRes, groupsRes, assignmentsRes] = await Promise.all([
+        fetch("/api/lessons"),
+        fetch("/api/groups"),
+        fetch("/api/assignments"),
+      ])
+      const [lessonsData, groupsData, assignmentsData] = await Promise.all([
+        lessonsRes.json(),
+        groupsRes.json(),
+        assignmentsRes.json(),
+      ])
+      setLessons(Array.isArray(lessonsData) ? lessonsData : [])
+      setGroups(Array.isArray(groupsData) ? groupsData : [])
+      setAssignments(Array.isArray(assignmentsData) ? assignmentsData : [])
+    } catch (err) {
+      console.error("Failed to fetch diary data:", err)
+      toast.error("Помилка завантаження даних")
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { fetchData() }, [])

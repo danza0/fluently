@@ -34,16 +34,29 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           role: user.role,
           nickname: user.nickname,
+          avatar: user.avatar,
         }
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.role = (user as any).role
         token.nickname = (user as any).nickname
         token.id = user.id
+        token.avatar = (user as any).avatar
+      }
+      if (trigger === "update") {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { avatar: true, name: true, nickname: true },
+        })
+        if (dbUser) {
+          token.avatar = dbUser.avatar
+          token.name = dbUser.name
+          token.nickname = dbUser.nickname
+        }
       }
       return token
     },
@@ -52,6 +65,7 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).role = token.role
         ;(session.user as any).nickname = token.nickname
         ;(session.user as any).id = token.id
+        ;(session.user as any).avatar = token.avatar
       }
       return session
     },

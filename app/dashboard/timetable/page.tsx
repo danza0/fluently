@@ -109,11 +109,17 @@ export default function TimetablePage() {
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
 
   const fetchData = async () => {
-    const [lr, gr] = await Promise.all([fetch("/api/lessons"), fetch("/api/groups")])
-    const [ld, gd] = await Promise.all([lr.json(), gr.json()])
-    setLessons(Array.isArray(ld) ? ld : [])
-    setGroups(Array.isArray(gd) ? gd : [])
-    setLoading(false)
+    try {
+      const [lr, gr] = await Promise.all([fetch("/api/lessons"), fetch("/api/groups")])
+      const [ld, gd] = await Promise.all([lr.json(), gr.json()])
+      setLessons(Array.isArray(ld) ? ld : [])
+      setGroups(Array.isArray(gd) ? gd : [])
+    } catch (err) {
+      console.error("Failed to fetch timetable data:", err)
+      toast.error("Помилка завантаження даних")
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { fetchData() }, [])
