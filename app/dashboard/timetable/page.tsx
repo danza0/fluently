@@ -111,6 +111,14 @@ export default function TimetablePage() {
   const fetchData = async () => {
     try {
       const [lr, gr] = await Promise.all([fetch("/api/lessons"), fetch("/api/groups")])
+      if (!lr.ok) {
+        toast.error(`Помилка завантаження уроків (${lr.status})`)
+        return
+      }
+      if (!gr.ok) {
+        toast.error(`Помилка завантаження груп (${gr.status})`)
+        return
+      }
       const [ld, gd] = await Promise.all([lr.json(), gr.json()])
       setLessons(Array.isArray(ld) ? ld : [])
       setGroups(Array.isArray(gd) ? gd : [])
