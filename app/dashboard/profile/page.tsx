@@ -78,7 +78,7 @@ export default function TeacherProfilePage() {
       if (!res.ok) {
         toast.error(data.error || "Помилка збереження")
       } else {
-        await update({ name: data.name })
+        await update({ name: data.name, avatar: data.avatar, nickname: data.nickname })
         toast.success("Профіль оновлено!")
       }
     } finally {
