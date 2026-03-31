@@ -48,6 +48,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       startTime: body.startTime,
       endTime: body.endTime,
       meetLink: body.meetLink || null,
+      coverImage: body.coverImage !== undefined ? (body.coverImage || null) : undefined,
       groupId: body.groupId,
       assignmentId: body.assignmentId || null,
     },

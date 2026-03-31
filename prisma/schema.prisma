@@ -225,6 +225,7 @@ model Lesson {
   startTime   String
   endTime     String
   meetLink    String?
+  coverImage  String?
   groupId     String
   group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
   teacherId   String

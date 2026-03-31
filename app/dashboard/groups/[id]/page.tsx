@@ -63,6 +63,28 @@ export default function GroupDetailPage() {
   const [editLogo, setEditLogo] = useState("")
   const [editCover, setEditCover] = useState("")
   const [savingMedia, setSavingMedia] = useState(false)
+  const [uploadingLogo, setUploadingLogo] = useState(false)
+  const [uploadingCover, setUploadingCover] = useState(false)
+
+  const uploadImage = async (file: File, setUrl: (url: string) => void, setUploading: (v: boolean) => void) => {
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append("file", file)
+      const res = await fetch("/api/upload", { method: "POST", body: fd })
+      if (res.ok) {
+        const data = await res.json()
+        setUrl(data.url)
+      } else {
+        const err = await res.json()
+        toast.error(err.error || "Помилка завантаження")
+      }
+    } catch {
+      toast.error("Помилка завантаження")
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const fetchGroup = async () => {
     const res = await fetch(`/api/groups/${params.id}`)
@@ -552,19 +574,69 @@ export default function GroupDetailPage() {
       <Dialog open={mediaOpen} onOpenChange={setMediaOpen}>
         <DialogContent>
           <DialogHeader><DialogTitle>Логотип та обкладинка</DialogTitle></DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="logo-url">URL логотипу</Label>
-              <Input id="logo-url" placeholder="https://example.com/logo.png" value={editLogo} onChange={e => setEditLogo(e.target.value)} />
+              <Label>Логотип групи</Label>
+              {editLogo && (
+                <img src={editLogo} alt="Логотип" className="w-16 h-16 rounded-xl object-cover border border-gray-200 mb-2" />
+              )}
+              <div className="flex items-center gap-2">
+                <label className="flex-1">
+                  <div className={`flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-[#BED9F4] rounded-xl p-4 cursor-pointer transition-colors ${uploadingLogo ? "opacity-50 pointer-events-none" : ""}`}>
+                    <Image className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-500">{uploadingLogo ? "Завантаження..." : "Обрати зображення"}</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="sr-only"
+                    disabled={uploadingLogo}
+                    onChange={e => {
+                      const file = e.target.files?.[0]
+                      if (file) uploadImage(file, setEditLogo, setUploadingLogo)
+                    }}
+                  />
+                </label>
+                {editLogo && (
+                  <Button variant="ghost" size="sm" onClick={() => setEditLogo("")} className="text-red-400 hover:text-red-600 hover:bg-red-50 flex-shrink-0">
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cover-url">URL обкладинки</Label>
-              <Input id="cover-url" placeholder="https://example.com/cover.jpg" value={editCover} onChange={e => setEditCover(e.target.value)} />
+              <Label>Обкладинка групи</Label>
+              {editCover && (
+                <img src={editCover} alt="Обкладинка" className="w-full h-24 rounded-xl object-cover border border-gray-200 mb-2" />
+              )}
+              <div className="flex items-center gap-2">
+                <label className="flex-1">
+                  <div className={`flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-[#BED9F4] rounded-xl p-4 cursor-pointer transition-colors ${uploadingCover ? "opacity-50 pointer-events-none" : ""}`}>
+                    <Image className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-500">{uploadingCover ? "Завантаження..." : "Обрати зображення"}</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="sr-only"
+                    disabled={uploadingCover}
+                    onChange={e => {
+                      const file = e.target.files?.[0]
+                      if (file) uploadImage(file, setEditCover, setUploadingCover)
+                    }}
+                  />
+                </label>
+                {editCover && (
+                  <Button variant="ghost" size="sm" onClick={() => setEditCover("")} className="text-red-400 hover:text-red-600 hover:bg-red-50 flex-shrink-0">
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setMediaOpen(false)}>Скасувати</Button>
-            <Button onClick={saveMedia} disabled={savingMedia} className="bg-[#BED9F4] hover:bg-[#5B9BD1] text-[#1e3a52] hover:text-white">
+            <Button onClick={saveMedia} disabled={savingMedia || uploadingLogo || uploadingCover} className="bg-[#BED9F4] hover:bg-[#5B9BD1] text-[#1e3a52] hover:text-white">
               {savingMedia ? "Збереження..." : "Зберегти"}
             </Button>
           </DialogFooter>

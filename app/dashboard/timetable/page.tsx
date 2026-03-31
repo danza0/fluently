@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronLeft, ChevronRight, Plus, Clock, Users, ExternalLink, BookOpen, Pencil, Trash2, UserCheck } from "lucide-react"
+import { ChevronLeft, ChevronRight, Plus, Clock, Users, ExternalLink, BookOpen, Pencil, Trash2, UserCheck, Image } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -22,9 +22,10 @@ interface Lesson {
   startTime: string
   endTime: string
   meetLink?: string | null
+  coverImage?: string | null
   group: { id: string; name: string }
   assignment?: { id: string; title: string } | null
-  attendances: { student: { id: string; name: string }; status: string }[]
+  attendances: { student: { id: string; name: string }; status: string; note?: string | null }[]
 }
 
 interface Group {
@@ -41,6 +42,7 @@ const emptyForm = {
   startTime: "",
   endTime: "",
   meetLink: "",
+  coverImage: "",
   groupId: "",
   assignmentId: "",
 }
@@ -69,6 +71,27 @@ export default function TimetablePage() {
   const [attendanceLesson, setAttendanceLesson] = useState<Lesson | null>(null)
   const [attendance, setAttendance] = useState<Record<string, { status: "PRESENT" | "LATE" | "ABSENT"; note: string }>>({})
   const [savingAttendance, setSavingAttendance] = useState(false)
+  const [uploadingCover, setUploadingCover] = useState(false)
+
+  const uploadCoverImage = async (file: File) => {
+    setUploadingCover(true)
+    try {
+      const fd = new FormData()
+      fd.append("file", file)
+      const res = await fetch("/api/upload", { method: "POST", body: fd })
+      if (res.ok) {
+        const data = await res.json()
+        setForm(f => ({ ...f, coverImage: data.url }))
+      } else {
+        const err = await res.json()
+        toast.error(err.error || "Помилка завантаження")
+      }
+    } catch {
+      toast.error("Помилка завантаження")
+    } finally {
+      setUploadingCover(false)
+    }
+  }
 
   const weekStart = addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), weekOffset * 7)
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
@@ -99,6 +122,7 @@ export default function TimetablePage() {
       startTime: lesson.startTime,
       endTime: lesson.endTime,
       meetLink: lesson.meetLink ?? "",
+      coverImage: lesson.coverImage ?? "",
       groupId: lesson.group.id,
       assignmentId: lesson.assignment?.id ?? "",
     })
@@ -157,7 +181,7 @@ export default function TimetablePage() {
       const existing = lesson.attendances.find(a => a.student.id === m.user.id)
       init[m.user.id] = {
         status: (existing?.status as "PRESENT" | "LATE" | "ABSENT") ?? "PRESENT",
-        note: "",
+        note: existing?.note ?? "",
       }
     }
     setAttendance(init)
@@ -408,12 +432,25 @@ export default function TimetablePage() {
               <Label htmlFor="description">Опис / план уроку</Label>
               <Textarea id="description" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2} placeholder="Короткий план заняття..." />
             </div>
+            <div>
+              <Label>Обкладинка уроку</Label>
+              {form.coverImage && (
+                <img src={form.coverImage} alt="Обкладинка" className="w-full h-24 rounded-xl object-cover border border-gray-200 mb-2 mt-1" />
+              )}
+              <label>
+                <div className={`flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-[#BED9F4] rounded-xl p-3 cursor-pointer transition-colors text-sm text-gray-500 ${uploadingCover ? "opacity-50 pointer-events-none" : ""}`}>
+                  <Image className="w-4 h-4 text-gray-400" />
+                  {uploadingCover ? "Завантаження..." : form.coverImage ? "Змінити зображення" : "Додати обкладинку"}
+                </div>
+                <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={uploadingCover} onChange={e => { const file = e.target.files?.[0]; if (file) uploadCoverImage(file) }} />
+              </label>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setFormOpen(false)}>Скасувати</Button>
             <Button
               onClick={saveLesson}
-              disabled={saving}
+              disabled={saving || uploadingCover}
               className="bg-[#BED9F4] hover:bg-[#5B9BD1] text-[#1e3a52] hover:text-white"
             >
               {saving ? "Збереження..." : "Зберегти"}
@@ -440,46 +477,60 @@ export default function TimetablePage() {
 
       {/* Attendance dialog */}
       <Dialog open={attendanceOpen} onOpenChange={setAttendanceOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Відвідуваність — {attendanceLesson?.title}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+          <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
             {attendanceLesson && (() => {
               const group = groups.find(g => g.id === attendanceLesson.group.id)
               if (!group) return <p className="text-gray-400 text-sm">Учнів не знайдено</p>
               return group.memberships.map(m => {
                 const val = attendance[m.user.id] ?? { status: "PRESENT", note: "" }
                 return (
-                  <div key={m.user.id} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-[#111111]">{m.user.name}</p>
-                      <p className="text-xs text-gray-400">@{m.user.nickname}</p>
+                  <div key={m.user.id} className="py-3 border-b border-gray-50 last:border-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 rounded-full bg-[#EBF5FD] flex items-center justify-center text-xs font-bold text-[#3A7AA8] flex-shrink-0">
+                        {m.user.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-[#111111] leading-tight">{m.user.name}</p>
+                        <p className="text-xs text-gray-400">@{m.user.nickname}</p>
+                      </div>
+                      <div className="flex gap-1 flex-shrink-0">
+                        {(["PRESENT", "LATE", "ABSENT"] as const).map(s => (
+                          <button
+                            key={s}
+                            onClick={() => setAttendance(prev => ({
+                              ...prev,
+                              [m.user.id]: { ...prev[m.user.id], status: s }
+                            }))}
+                            className={`text-xs px-2.5 py-1.5 rounded-lg font-medium transition-all ${
+                              val.status === s
+                                ? s === "PRESENT" ? "bg-[#E0FFC2] text-green-800" : s === "LATE" ? "bg-yellow-200 text-yellow-800" : "bg-red-200 text-red-700"
+                                : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+                            }`}
+                          >
+                            {s === "PRESENT" ? "П" : s === "LATE" ? "З" : "В"}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex gap-1">
-                      {(["PRESENT", "LATE", "ABSENT"] as const).map(s => (
-                        <button
-                          key={s}
-                          onClick={() => setAttendance(prev => ({
-                            ...prev,
-                            [m.user.id]: { ...prev[m.user.id], status: s }
-                          }))}
-                          className={`text-xs px-2 py-1 rounded font-medium transition-all ${
-                            val.status === s
-                              ? s === "PRESENT" ? "bg-[#E0FFC2] text-green-800" : s === "LATE" ? "bg-yellow-200 text-yellow-800" : "bg-red-200 text-red-700"
-                              : "bg-gray-100 text-gray-400 hover:bg-gray-200"
-                          }`}
-                        >
-                          {s === "PRESENT" ? "П" : s === "LATE" ? "З" : "В"}
-                        </button>
-                      ))}
-                    </div>
+                    <Input
+                      placeholder="Коментар поведінки (необов'язково)..."
+                      value={val.note}
+                      onChange={e => setAttendance(prev => ({
+                        ...prev,
+                        [m.user.id]: { ...prev[m.user.id], note: e.target.value }
+                      }))}
+                      className="text-xs h-8 bg-[#FAFBFD] border-gray-200 focus:border-[#BED9F4] placeholder:text-gray-300"
+                    />
                   </div>
                 )
               })
             })()}
           </div>
-          <div className="flex gap-2 mt-2 text-xs text-gray-500">
+          <div className="flex gap-2 mt-1 text-xs text-gray-500">
             <span className="bg-[#E0FFC2] text-green-800 px-2 py-0.5 rounded">П — Присутній</span>
             <span className="bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded">З — Запізнився</span>
             <span className="bg-red-200 text-red-700 px-2 py-0.5 rounded">В — Відсутній</span>

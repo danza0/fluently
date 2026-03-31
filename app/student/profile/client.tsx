@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
-import { User, Mail, Hash, BookOpen, Globe, Pencil, X } from "lucide-react"
+import { User, Mail, Hash, BookOpen, Globe, Pencil, X, Camera } from "lucide-react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
@@ -46,6 +46,28 @@ export default function StudentProfileClient({ studentData }: { studentData: Stu
   const [avatar, setAvatar] = useState(studentData.avatar ?? "")
   const [timezone, setTimezone] = useState(studentData.timezone ?? "Europe/Kyiv")
   const [saving, setSaving] = useState(false)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+
+  const handleAvatarUpload = async (file: File) => {
+    setUploadingAvatar(true)
+    try {
+      const fd = new FormData()
+      fd.append("file", file)
+      const res = await fetch("/api/upload", { method: "POST", body: fd })
+      if (res.ok) {
+        const data = await res.json()
+        setAvatar(data.url)
+        toast.success("Фото завантажено!")
+      } else {
+        const err = await res.json()
+        toast.error(err.error || "Помилка завантаження")
+      }
+    } catch {
+      toast.error("Помилка завантаження")
+    } finally {
+      setUploadingAvatar(false)
+    }
+  }
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -86,18 +108,39 @@ export default function StudentProfileClient({ studentData }: { studentData: Stu
         )}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
-        <div className="flex items-center gap-4 mb-6">
-          {studentData.avatar ? (
-            <img src={studentData.avatar} alt={studentData.name} className="w-16 h-16 rounded-full object-cover" />
-          ) : (
-            <div className="w-16 h-16 bg-sky-custom rounded-full flex items-center justify-center">
-              <span className="text-sky-darker font-bold text-2xl">{studentData.name.charAt(0)}</span>
-            </div>
-          )}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6 shadow-sm">
+        <div className="flex items-center gap-5 mb-6">
+          <div className="relative group">
+            {(editing ? avatar : studentData.avatar) ? (
+              <img src={editing ? avatar : studentData.avatar!} alt={studentData.name} className="w-20 h-20 rounded-full object-cover border-2 border-[#EBF5FD]" />
+            ) : (
+              <div className="w-20 h-20 bg-gradient-to-br from-[#BED9F4] to-[#5B9BD1] rounded-full flex items-center justify-center border-2 border-[#EBF5FD]">
+                <span className="text-white font-bold text-3xl">{studentData.name.charAt(0)}</span>
+              </div>
+            )}
+            {editing && (
+              <>
+                <label className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  <Camera className="w-5 h-5 text-white" />
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="sr-only"
+                    disabled={uploadingAvatar}
+                    onChange={e => { const file = e.target.files?.[0]; if (file) handleAvatarUpload(file) }}
+                  />
+                </label>
+                {uploadingAvatar && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-full">
+                    <div className="w-5 h-5 border-2 border-[#3A7AA8] border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{studentData.name}</h2>
-            <p className="text-gray-500">Учень</p>
+            <h2 className="text-xl font-bold text-[#111111]">{studentData.name}</h2>
+            <p className="text-gray-500 text-sm">Учень</p>
           </div>
         </div>
 
@@ -131,15 +174,6 @@ export default function StudentProfileClient({ studentData }: { studentData: Stu
             <div className="space-y-2">
               <Label htmlFor="nickname">Нікнейм</Label>
               <Input id="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="avatar">URL аватара</Label>
-              <Input
-                id="avatar"
-                value={avatar}
-                onChange={(e) => setAvatar(e.target.value)}
-                placeholder="https://example.com/avatar.jpg"
-              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="timezone">Часовий пояс</Label>
