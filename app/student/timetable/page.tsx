@@ -30,7 +30,7 @@ const attendanceInfo = (status: string) => {
   return { label: "Відсутній", cls: "bg-red-100 text-red-700" }
 }
 
-export default function StudentDiaryPage() {
+export default function StudentTimetablePage() {
   const [weekOffset, setWeekOffset] = useState(0)
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [loading, setLoading] = useState(true)
@@ -64,7 +64,7 @@ export default function StudentDiaryPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#111111]">Щоденник</h1>
+          <h1 className="text-2xl font-bold text-[#111111]">Розклад</h1>
           <p className="text-sm text-gray-500 mt-0.5">
             {format(weekStart, "d MMM", { locale: uk })} – {format(addDays(weekStart, 6), "d MMM yyyy", { locale: uk })}
           </p>

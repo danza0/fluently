@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
-import { format, addDays, startOfWeek, isToday, isSameDay } from "date-fns"
+import { format, addDays, startOfWeek, isToday } from "date-fns"
 import { uk } from "date-fns/locale"
 
 interface Lesson {
@@ -188,7 +188,7 @@ export default function TimetablePage() {
 
   const lessonsOnDay = (day: Date) =>
     lessons
-      .filter(l => isSameDay(new Date(l.date), day))
+      .filter(l => l.date.slice(0, 10) === format(day, "yyyy-MM-dd"))
       .sort((a, b) => a.startTime.localeCompare(b.startTime))
 
   return (

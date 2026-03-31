@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
-import { GraduationCap, LayoutDashboard, Users, BookOpen, Calendar, BarChart2, LogOut, User, BookMarked, CalendarDays } from "lucide-react"
+import { GraduationCap, LayoutDashboard, Users, BookOpen, Calendar, BarChart2, LogOut, User, CalendarDays } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface SidebarProps {
@@ -16,7 +16,6 @@ const teacherLinks = [
   { href: "/dashboard", label: "Дашборд", icon: LayoutDashboard },
   { href: "/dashboard/groups", label: "Групи", icon: Users },
   { href: "/dashboard/assignments", label: "Завдання", icon: BookOpen },
-  { href: "/dashboard/diary", label: "Щоденник", icon: BookMarked },
   { href: "/dashboard/timetable", label: "Розклад", icon: CalendarDays },
   { href: "/dashboard/students", label: "Учні", icon: User },
   { href: "/dashboard/calendar", label: "Календар", icon: Calendar },
@@ -27,7 +26,7 @@ const teacherLinks = [
 const studentLinks = [
   { href: "/student", label: "Дашборд", icon: LayoutDashboard },
   { href: "/student/groups", label: "Мої групи", icon: Users },
-  { href: "/student/diary", label: "Щоденник", icon: BookMarked },
+  { href: "/student/timetable", label: "Розклад", icon: CalendarDays },
   { href: "/student/calendar", label: "Календар", icon: Calendar },
   { href: "/student/profile", label: "Профіль", icon: User },
 ]
