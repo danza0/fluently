@@ -28,32 +28,38 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   if (user.role !== "TEACHER") return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   const { id } = await params
 
-  const body = await request.json()
+  try {
+    const body = await request.json()
 
-  let parsedDate: Date | undefined
-  if (body.date) {
-    parsedDate = new Date(body.date)
+    if (!body.title || !body.date || !body.startTime || !body.endTime || !body.groupId) {
+      return NextResponse.json({ error: "Обов'язкові поля відсутні" }, { status: 400 })
+    }
+
+    const parsedDate = new Date(body.date)
     if (isNaN(parsedDate.getTime())) {
       return NextResponse.json({ error: "Невірна дата" }, { status: 400 })
     }
-  }
 
-  const lesson = await prisma.lesson.update({
-    where: { id },
-    data: {
-      title: body.title,
-      theme: body.theme || null,
-      description: body.description || null,
-      date: parsedDate,
-      startTime: body.startTime,
-      endTime: body.endTime,
-      meetLink: body.meetLink || null,
-      coverImage: body.coverImage || null,
-      groupId: body.groupId,
-      assignmentId: body.assignmentId || null,
-    },
-  })
-  return NextResponse.json(lesson)
+    const lesson = await prisma.lesson.update({
+      where: { id },
+      data: {
+        title: body.title,
+        theme: body.theme || null,
+        description: body.description || null,
+        date: parsedDate,
+        startTime: body.startTime,
+        endTime: body.endTime,
+        meetLink: body.meetLink || null,
+        coverImage: body.coverImage || null,
+        groupId: body.groupId,
+        assignmentId: body.assignmentId || null,
+      },
+    })
+    return NextResponse.json(lesson)
+  } catch (err) {
+    console.error("PUT /api/lessons/[id] error:", err)
+    return NextResponse.json({ error: "Помилка сервера" }, { status: 500 })
+  }
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -63,6 +69,11 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   if (user.role !== "TEACHER") return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   const { id } = await params
 
-  await prisma.lesson.delete({ where: { id } })
-  return NextResponse.json({ success: true })
+  try {
+    await prisma.lesson.delete({ where: { id } })
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error("DELETE /api/lessons/[id] error:", err)
+    return NextResponse.json({ error: "Помилка сервера" }, { status: 500 })
+  }
 }
