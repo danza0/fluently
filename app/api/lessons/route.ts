@@ -42,6 +42,15 @@ export async function POST(request: Request) {
     if (isNaN(parsedDate.getTime())) {
       return NextResponse.json({ error: "Invalid date" }, { status: 400 })
     }
+    const group = await prisma.group.findUnique({ where: { id: body.groupId } })
+    if (!group) return NextResponse.json({ error: "Групу не знайдено" }, { status: 400 })
+
+    const assignmentId: string | null = body.assignmentId || null
+    if (assignmentId) {
+      const assignment = await prisma.assignment.findUnique({ where: { id: assignmentId } })
+      if (!assignment) return NextResponse.json({ error: "Завдання не знайдено" }, { status: 400 })
+    }
+
     const lesson = await prisma.lesson.create({
       data: {
         title: body.title,
@@ -54,7 +63,7 @@ export async function POST(request: Request) {
         coverImage: body.coverImage || null,
         groupId: body.groupId,
         teacherId: user.id,
-        assignmentId: body.assignmentId || null,
+        assignmentId,
       },
       include: {
         group: true,
@@ -64,7 +73,7 @@ export async function POST(request: Request) {
     })
     return NextResponse.json(lesson, { status: 201 })
   } catch (error) {
-    console.error(error)
+    console.error("POST /api/lessons error:", error)
     return NextResponse.json({ error: "Помилка сервера" }, { status: 500 })
   }
 }

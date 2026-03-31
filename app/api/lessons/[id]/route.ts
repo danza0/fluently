@@ -40,6 +40,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: "Невірна дата" }, { status: 400 })
     }
 
+    const assignmentId: string | null = body.assignmentId || null
+    if (assignmentId) {
+      const assignment = await prisma.assignment.findUnique({ where: { id: assignmentId } })
+      if (!assignment) return NextResponse.json({ error: "Завдання не знайдено" }, { status: 400 })
+    }
+
     const lesson = await prisma.lesson.update({
       where: { id },
       data: {
@@ -52,7 +58,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         meetLink: body.meetLink || null,
         coverImage: body.coverImage || null,
         groupId: body.groupId,
-        assignmentId: body.assignmentId || null,
+        assignmentId,
       },
     })
     return NextResponse.json(lesson)
