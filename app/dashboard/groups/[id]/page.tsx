@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, Users, Copy, RefreshCw, UserPlus, Trash2, Pencil, Check, X, Image, BookOpen, GraduationCap, Star } from "lucide-react"
+import { ArrowLeft, Users, Copy, RefreshCw, UserPlus, Trash2, Pencil, Check, X, Image, BookOpen, GraduationCap, Star, Rss, ClipboardList } from "lucide-react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { uk } from "date-fns/locale"
@@ -21,11 +21,11 @@ import { Label } from "@/components/ui/label"
 
 type Tab = "stream" | "assignments" | "people" | "grades"
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: "stream", label: "Стрічка" },
-  { id: "assignments", label: "Завдання" },
-  { id: "people", label: "Люди" },
-  { id: "grades", label: "Оцінки" },
+const TABS: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  { id: "stream", label: "Стрічка класу", icon: Rss },
+  { id: "assignments", label: "Завдання", icon: ClipboardList },
+  { id: "people", label: "Люди", icon: Users },
+  { id: "grades", label: "Оцінки", icon: Star },
 ]
 
 const statusColors: Record<string, string> = {
@@ -261,27 +261,26 @@ export default function GroupDetailPage() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 bg-white px-8">
-        <div className="flex gap-0">
-          {TABS.map(t => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`relative px-5 py-3 text-sm font-semibold transition-colors ${
-                tab === t.id
-                  ? "text-[#3A7AA8]"
-                  : "text-gray-500 hover:text-[#111111]"
-              }`}
-            >
-              {t.label}
-              {tab === t.id && (
-                <motion.div
-                  layoutId="tab-underline"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#3A7AA8] rounded-full"
-                />
-              )}
-            </button>
-          ))}
+      <div className="bg-white border-b border-gray-100 px-8">
+        <div className="flex gap-2 py-3">
+          {TABS.map(t => {
+            const Icon = t.icon
+            const active = tab === t.id
+            return (
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                className={`flex flex-col items-center gap-1.5 px-5 py-3 rounded-xl text-sm font-medium transition-all min-w-[90px] ${
+                  active
+                    ? "bg-[#BED9F4] text-[#1e3a52]"
+                    : "bg-[#F5F8FA] text-gray-500 hover:bg-[#EBF5FD] hover:text-[#3A7AA8]"
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="text-xs leading-tight text-center">{t.label}</span>
+              </button>
+            )
+          })}
         </div>
       </div>
 

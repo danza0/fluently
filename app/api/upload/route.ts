@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { writeFile, mkdir } from "fs/promises"
-import { join } from "path"
+import { put } from "@vercel/blob"
 import { nanoid } from "nanoid"
 import { MAX_FILE_SIZE, ALLOWED_MIME_TYPES } from "@/lib/upload-config"
 
@@ -23,26 +22,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Непідтримуваний тип файлу" }, { status: 400 })
     }
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
-    const MIME_TO_EXT: Record<string, string> = {
-      "image/jpeg": "jpg",
-      "image/jpg": "jpg",
-      "image/png": "png",
-      "application/pdf": "pdf",
-      "application/msword": "doc",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
-    }
-    const safeExt = MIME_TO_EXT[file.type] ?? "bin"
-    const fileName = `${nanoid()}.${safeExt}`
-    const uploadsDir = join(process.cwd(), "public", "uploads")
-
-    await mkdir(uploadsDir, { recursive: true })
-    await writeFile(join(uploadsDir, fileName), buffer)
+    const blob = await put(`uploads/${nanoid()}-${file.name}`, file, {
+      access: "public",
+    })
 
     return NextResponse.json({
-      url: `/uploads/${fileName}`,
+      url: blob.url,
       fileName: file.name,
       fileType: file.type,
     })
