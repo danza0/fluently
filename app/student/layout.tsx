@@ -10,8 +10,8 @@ export default async function StudentLayout({ children }: { children: React.Reac
   if (user.role !== "STUDENT") redirect("/dashboard")
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar role="STUDENT" userName={session.user?.name ?? undefined} />
+    <div className="flex min-h-screen bg-[#FAFBFD]">
+      <Sidebar role="STUDENT" userName={session.user?.name ?? undefined} userAvatar={(user as any).avatar ?? undefined} />
       <main className="flex-1 overflow-auto">
         {children}
       </main>

@@ -206,9 +206,16 @@ export default function StudentDiaryPage() {
               if (!att) return null
               const info = attendanceInfo(att.status)
               return (
-                <div className={`mt-3 inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-full ${info.cls}`}>
-                  <UserCheck className="w-3 h-3" />
-                  {info.label}
+                <div className="mt-3 space-y-1.5">
+                  <div className={`inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-full ${info.cls}`}>
+                    <UserCheck className="w-3 h-3" />
+                    {info.label}
+                  </div>
+                  {att.note && (
+                    <p className="text-xs text-gray-500 italic bg-[#FAFBFD] rounded-lg px-2 py-1.5 border border-gray-100">
+                      💬 {att.note}
+                    </p>
+                  )}
                 </div>
               )
             })()}

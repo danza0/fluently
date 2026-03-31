@@ -51,6 +51,7 @@ export async function POST(request: Request) {
         startTime: body.startTime,
         endTime: body.endTime,
         meetLink: body.meetLink || null,
+        coverImage: body.coverImage || null,
         groupId: body.groupId,
         teacherId: user.id,
         assignmentId: body.assignmentId || null,
