@@ -42,6 +42,16 @@ export async function POST(request: Request) {
     if (isNaN(parsedDate.getTime())) {
       return NextResponse.json({ error: "Invalid date" }, { status: 400 })
     }
+    const group = await prisma.group.findUnique({ where: { id: body.groupId } })
+    if (!group) {
+      return NextResponse.json({ error: "Групу не знайдено" }, { status: 400 })
+    }
+    if (body.assignmentId) {
+      const assignment = await prisma.assignment.findUnique({ where: { id: body.assignmentId } })
+      if (!assignment) {
+        return NextResponse.json({ error: "Завдання не знайдено" }, { status: 400 })
+      }
+    }
     const lesson = await prisma.lesson.create({
       data: {
         title: body.title,

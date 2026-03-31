@@ -175,7 +175,18 @@ export default function TimetablePage() {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, assignmentId: form.assignmentId || null }),
+        body: JSON.stringify({
+          title: form.title,
+          theme: form.theme || null,
+          description: form.description || null,
+          date: form.date,
+          startTime: form.startTime,
+          endTime: form.endTime,
+          meetLink: form.meetLink || null,
+          coverImage: form.coverImage || null,
+          groupId: form.groupId,
+          assignmentId: form.assignmentId || null,
+        }),
       })
       if (res.ok) {
         toast.success(editLesson ? "Урок оновлено!" : "Урок створено!")
