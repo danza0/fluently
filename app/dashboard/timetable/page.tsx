@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight, Plus, Clock, Users, ExternalLink, BookOpen, Pencil, Trash2, UserCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -53,6 +54,7 @@ const statusColor = (status: string) => {
 }
 
 export default function TimetablePage() {
+  const router = useRouter()
   const [weekOffset, setWeekOffset] = useState(0)
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [groups, setGroups] = useState<Group[]>([])
@@ -256,26 +258,27 @@ export default function TimetablePage() {
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.2 }}
                       className="bg-white border border-[#D5EAFB] rounded-xl p-3 group hover:shadow-md hover:border-[#BED9F4] transition-all cursor-pointer"
+                      onClick={() => router.push(`/dashboard/timetable/${lesson.id}`)}
                     >
                       <div className="flex items-start justify-between gap-1 mb-1">
                         <span className="text-xs font-bold text-[#111111] leading-tight line-clamp-2 flex-1">{lesson.title}</span>
                         <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                           <button
-                            onClick={() => openAttendance(lesson)}
+                            onClick={e => { e.stopPropagation(); openAttendance(lesson) }}
                             className="p-0.5 rounded hover:bg-[#EBF5FD] text-gray-400 hover:text-[#3A7AA8]"
                             title="Відвідуваність"
                           >
                             <UserCheck className="w-3 h-3" />
                           </button>
                           <button
-                            onClick={() => openEdit(lesson)}
+                            onClick={e => { e.stopPropagation(); openEdit(lesson) }}
                             className="p-0.5 rounded hover:bg-[#EBF5FD] text-gray-400 hover:text-[#3A7AA8]"
                             title="Редагувати"
                           >
                             <Pencil className="w-3 h-3" />
                           </button>
                           <button
-                            onClick={() => confirmDelete(lesson)}
+                            onClick={e => { e.stopPropagation(); confirmDelete(lesson) }}
                             className="p-0.5 rounded hover:bg-red-50 text-gray-400 hover:text-red-500"
                             title="Видалити"
                           >
