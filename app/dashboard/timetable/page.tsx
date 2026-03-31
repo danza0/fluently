@@ -111,15 +111,19 @@ export default function TimetablePage() {
   const fetchData = async () => {
     try {
       const [lr, gr] = await Promise.all([fetch("/api/lessons"), fetch("/api/groups")])
+
       if (!lr.ok) {
-        toast.error(`Помилка завантаження уроків (${lr.status})`)
-        return
+        console.error("Lessons API error:", lr.status, await lr.text())
+        toast.error("Помилка завантаження уроків")
       }
       if (!gr.ok) {
-        toast.error(`Помилка завантаження груп (${gr.status})`)
-        return
+        console.error("Groups API error:", gr.status, await gr.text())
+        toast.error("Помилка завантаження груп")
       }
-      const [ld, gd] = await Promise.all([lr.json(), gr.json()])
+
+      const ld = lr.ok ? await lr.json() : []
+      const gd = gr.ok ? await gr.json() : []
+
       setLessons(Array.isArray(ld) ? ld : [])
       setGroups(Array.isArray(gd) ? gd : [])
     } catch (err) {
@@ -174,7 +178,9 @@ export default function TimetablePage() {
         setFormOpen(false)
         fetchData()
       } else {
-        toast.error("Помилка збереження")
+        const errData = await res.json().catch(() => null)
+        console.error("Save lesson error:", errData)
+        toast.error(errData?.error || "Помилка збереження")
       }
     } finally {
       setSaving(false)
@@ -195,7 +201,9 @@ export default function TimetablePage() {
       setDeleteTarget(null)
       fetchData()
     } else {
-      toast.error("Помилка видалення")
+      const errData = await res.json().catch(() => null)
+      console.error("Delete lesson error:", errData)
+      toast.error(errData?.error || "Помилка видалення")
     }
   }
 
@@ -233,7 +241,9 @@ export default function TimetablePage() {
       setAttendanceOpen(false)
       fetchData()
     } else {
-      toast.error("Помилка збереження")
+      const errData = await res.json().catch(() => null)
+      console.error("Save attendance error:", errData)
+      toast.error(errData?.error || "Помилка збереження відвідуваності")
     }
     setSavingAttendance(false)
   }

@@ -133,7 +133,9 @@ export default function LessonDetailPage() {
         setEditOpen(false)
         fetchLesson()
       } else {
-        toast.error("Помилка збереження")
+        const errData = await res.json().catch(() => null)
+        console.error("Save lesson error:", errData)
+        toast.error(errData?.error || "Помилка збереження")
       }
     } finally {
       setSaving(false)
@@ -147,7 +149,9 @@ export default function LessonDetailPage() {
       toast.success("Урок видалено")
       router.push("/dashboard/timetable")
     } else {
-      toast.error("Помилка видалення")
+      const errData = await res.json().catch(() => null)
+      console.error("Delete lesson error:", errData)
+      toast.error(errData?.error || "Помилка видалення")
       setDeleting(false)
     }
   }
@@ -168,7 +172,9 @@ export default function LessonDetailPage() {
       toast.success("Відвідуваність збережено!")
       fetchLesson()
     } else {
-      toast.error("Помилка збереження")
+      const errData = await res.json().catch(() => null)
+      console.error("Save attendance error:", errData)
+      toast.error(errData?.error || "Помилка збереження відвідуваності")
     }
     setSavingAttendance(false)
   }
