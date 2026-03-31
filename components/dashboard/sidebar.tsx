@@ -47,7 +47,7 @@ export function Sidebar({ role, userName, userAvatar }: SidebarProps) {
           </div>
           <div>
             <span className="text-base font-bold text-[#111111] tracking-tight">Fluently</span>
-            <p className="text-[10px] text-gray-400 leading-none mt-0.5">{role === "TEACHER" ? "Викладач" : "Учень"}</p>
+            <p className="text-[10px] text-gray-400 leading-none mt-0.5">{role === "TEACHER" ? "Вчитель" : "Учень"}</p>
           </div>
         </Link>
       </div>

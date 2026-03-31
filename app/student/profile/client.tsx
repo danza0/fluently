@@ -111,13 +111,16 @@ export default function StudentProfileClient({ studentData }: { studentData: Stu
       <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6 shadow-sm">
         <div className="flex items-center gap-5 mb-6">
           <div className="relative group">
-            {(editing ? avatar : studentData.avatar) ? (
-              <img src={editing ? avatar : studentData.avatar!} alt={studentData.name} className="w-20 h-20 rounded-full object-cover border-2 border-[#EBF5FD]" />
-            ) : (
-              <div className="w-20 h-20 bg-gradient-to-br from-[#BED9F4] to-[#5B9BD1] rounded-full flex items-center justify-center border-2 border-[#EBF5FD]">
-                <span className="text-white font-bold text-3xl">{studentData.name.charAt(0)}</span>
-              </div>
-            )}
+            {(() => {
+              const displayAvatar = editing ? avatar : (studentData.avatar ?? "")
+              return displayAvatar ? (
+                <img src={displayAvatar} alt={studentData.name} className="w-20 h-20 rounded-full object-cover border-2 border-[#EBF5FD]" />
+              ) : (
+                <div className="w-20 h-20 bg-gradient-to-br from-[#BED9F4] to-[#5B9BD1] rounded-full flex items-center justify-center border-2 border-[#EBF5FD]">
+                  <span className="text-white font-bold text-3xl">{studentData.name.charAt(0)}</span>
+                </div>
+              )
+            })()}
             {editing && (
               <>
                 <label className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">

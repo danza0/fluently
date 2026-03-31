@@ -47,6 +47,18 @@ const emptyForm = {
   assignmentId: "",
 }
 
+const statusActiveClass: Record<string, string> = {
+  PRESENT: "bg-[#E0FFC2] text-green-800",
+  LATE: "bg-yellow-200 text-yellow-800",
+  ABSENT: "bg-red-200 text-red-700",
+}
+
+const statusLabel: Record<string, string> = {
+  PRESENT: "П",
+  LATE: "З",
+  ABSENT: "В",
+}
+
 const DAYS_UA = ["Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота", "Неділя"]
 
 const statusColor = (status: string) => {
@@ -507,11 +519,11 @@ export default function TimetablePage() {
                             }))}
                             className={`text-xs px-2.5 py-1.5 rounded-lg font-medium transition-all ${
                               val.status === s
-                                ? s === "PRESENT" ? "bg-[#E0FFC2] text-green-800" : s === "LATE" ? "bg-yellow-200 text-yellow-800" : "bg-red-200 text-red-700"
+                                ? statusActiveClass[s]
                                 : "bg-gray-100 text-gray-400 hover:bg-gray-200"
                             }`}
                           >
-                            {s === "PRESENT" ? "П" : s === "LATE" ? "З" : "В"}
+                            {statusLabel[s]}
                           </button>
                         ))}
                       </div>
