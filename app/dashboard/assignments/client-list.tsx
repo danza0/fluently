@@ -8,6 +8,13 @@ import { Trash2, CheckCircle, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { uk } from "date-fns/locale"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
 
 interface Assignment {
   id: string
@@ -24,24 +31,30 @@ export function AssignmentsClientList({ assignments }: { assignments: Assignment
   const router = useRouter()
   const [deleting, setDeleting] = useState<string | null>(null)
   const [list, setList] = useState(assignments)
+  const [deleteTarget, setDeleteTarget] = useState<Assignment | null>(null)
 
   const now = new Date()
   const upcoming = list.filter(a => new Date(a.dueDate) >= now)
   const past = list.filter(a => new Date(a.dueDate) < now)
 
-  const handleDelete = async (id: string, title: string) => {
-    if (!confirm(`Видалити завдання "${title}"? Ця дія незворотна.`)) return
-    setDeleting(id)
+  const confirmDelete = (a: Assignment) => {
+    setDeleteTarget(a)
+  }
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    setDeleting(deleteTarget.id)
     try {
-      const res = await fetch(`/api/assignments/${id}`, { method: "DELETE" })
+      const res = await fetch(`/api/assignments/${deleteTarget.id}`, { method: "DELETE" })
       if (res.ok) {
-        setList(prev => prev.filter(a => a.id !== id))
+        setList(prev => prev.filter(a => a.id !== deleteTarget.id))
         toast.success("Завдання видалено")
       } else {
         toast.error("Помилка видалення")
       }
     } finally {
       setDeleting(null)
+      setDeleteTarget(null)
     }
   }
 
@@ -105,7 +118,7 @@ export function AssignmentsClientList({ assignments }: { assignments: Assignment
             <div className="w-5 h-5 rounded-full border-2 border-gray-200" />
           )}
           <button
-            onClick={() => handleDelete(a.id, a.title)}
+            onClick={() => confirmDelete(a)}
             disabled={deleting === a.id}
             className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
             title="Видалити завдання"
@@ -119,6 +132,12 @@ export function AssignmentsClientList({ assignments }: { assignments: Assignment
 
   return (
     <>
+      {list.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+          <p className="text-lg font-medium">Немає завдань</p>
+          <p className="text-sm mt-1">Створіть перше завдання, натиснувши кнопку вище</p>
+        </div>
+      )}
       {upcoming.length > 0 && (
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Активні ({upcoming.length})</h2>
@@ -135,6 +154,24 @@ export function AssignmentsClientList({ assignments }: { assignments: Assignment
           </div>
         </div>
       )}
+
+      {/* Delete confirmation dialog (non-blocking) */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Видалити завдання?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-gray-600">
+            Завдання <strong>{deleteTarget?.title}</strong> буде видалено. Ця дія незворотна.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)}>Скасувати</Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={deleting === deleteTarget?.id}>
+              {deleting === deleteTarget?.id ? "Видалення..." : "Видалити"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
