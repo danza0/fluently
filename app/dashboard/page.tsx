@@ -20,7 +20,7 @@ export default async function DashboardPage() {
         assignmentGroups: { include: { group: true } },
         submissions: { include: { grade: true } },
       },
-      orderBy: { dueDate: "asc" },
+      orderBy: { dueDate: { sort: "asc", nulls: "last" } },
       take: 5,
     }),
     prisma.grade.findMany({ where: { teacherId: user.id } }),
@@ -32,7 +32,7 @@ export default async function DashboardPage() {
   })
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Вітаємо, {session!.user?.name}! 👋</h1>
         <p className="text-gray-500 mt-1">Ось ваш огляд на сьогодні</p>

@@ -20,7 +20,7 @@ interface Assignment {
   id: string
   title: string
   description?: string | null
-  dueDate: string | Date
+  dueDate: string | Date | null
   maxGrade: number
   assignmentGroups?: { group: { name: string } }[]
   assignmentStudents?: { student: { name: string } }[]
@@ -34,8 +34,8 @@ export function AssignmentsClientList({ assignments }: { assignments: Assignment
   const [deleteTarget, setDeleteTarget] = useState<Assignment | null>(null)
 
   const now = new Date()
-  const upcoming = list.filter(a => new Date(a.dueDate) >= now)
-  const past = list.filter(a => new Date(a.dueDate) < now)
+  const upcoming = list.filter(a => !a.dueDate || new Date(a.dueDate) >= now)
+  const past = list.filter(a => a.dueDate && new Date(a.dueDate) < now)
 
   const confirmDelete = (a: Assignment) => {
     setDeleteTarget(a)
@@ -59,21 +59,21 @@ export function AssignmentsClientList({ assignments }: { assignments: Assignment
   }
 
   const renderAssignment = (a: Assignment) => {
-    const dueDate = new Date(a.dueDate)
+    const dueDate = a.dueDate ? new Date(a.dueDate) : null
     const submittedCount = a.submissions?.length ?? 0
     const gradedCount = a.submissions?.filter(s => s.status === "GRADED").length ?? 0
-    const isOverdue = now > dueDate
+    const isOverdue = dueDate ? now > dueDate : false
     const groups = a.assignmentGroups?.map(ag => ag.group.name) ?? []
 
     return (
       <div key={a.id} className="flex items-stretch gap-4 bg-white rounded-xl border border-gray-100 hover:shadow-md transition-all group">
         {/* Date badge */}
-        <div className="flex flex-col items-center justify-center bg-[#BED9F4] rounded-l-xl px-4 py-4 min-w-[72px] flex-shrink-0">
-          <span className="text-[10px] font-semibold text-[#1e3a52] uppercase tracking-wide">
-            {format(dueDate, "MMM", { locale: uk })}
+        <div className="flex flex-col items-center justify-center bg-[var(--accent-300)] rounded-l-xl px-4 py-4 min-w-[72px] flex-shrink-0">
+          <span className="text-[10px] font-semibold text-[var(--accent-900)] uppercase tracking-wide">
+            {dueDate ? format(dueDate, "MMM", { locale: uk }) : "Без"}
           </span>
-          <span className="text-2xl font-bold text-[#1e3a52] leading-none">
-            {format(dueDate, "d")}
+          <span className={dueDate ? "text-2xl font-bold text-[var(--accent-900)] leading-none" : "text-[10px] font-semibold text-[var(--accent-900)] leading-none"}>
+            {dueDate ? format(dueDate, "d") : "дедлайну"}
           </span>
         </div>
 
@@ -88,7 +88,7 @@ export function AssignmentsClientList({ assignments }: { assignments: Assignment
                 </span>
               )}
               {submittedCount > 0 && (
-                <span className="text-[10px] bg-[#EBF5FD] text-[#3A7AA8] px-1.5 py-0.5 rounded-full font-medium">
+                <span className="text-[10px] bg-[var(--accent-100)] text-[var(--accent-600)] px-1.5 py-0.5 rounded-full font-medium">
                   Здано: {submittedCount}
                 </span>
               )}
@@ -102,7 +102,7 @@ export function AssignmentsClientList({ assignments }: { assignments: Assignment
               <span key={g} className="text-[10px] bg-[#F0F4F8] text-gray-600 px-2 py-0.5 rounded-full">{g}</span>
             ))}
             <span className="text-[10px] text-gray-400">
-              Термін: {format(dueDate, "d MMM yyyy, HH:mm", { locale: uk })}
+              {dueDate ? `Термін: ${format(dueDate, "d MMM yyyy, HH:mm", { locale: uk })}` : "Без дедлайну"}
             </span>
             <span className="text-[10px] text-gray-400">Макс: {a.maxGrade} б</span>
           </div>

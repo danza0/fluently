@@ -18,6 +18,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { UserAvatar } from "@/components/ui/user-avatar"
 
 type Tab = "stream" | "assignments" | "people" | "grades"
 
@@ -30,7 +31,7 @@ const TABS: { id: Tab; label: string; icon: React.ComponentType<{ className?: st
 
 const statusColors: Record<string, string> = {
   PENDING: "bg-gray-100 text-gray-500",
-  SUBMITTED: "bg-[#EBF5FD] text-[#3A7AA8]",
+  SUBMITTED: "bg-[var(--accent-100)] text-[var(--accent-600)]",
   GRADED: "bg-[#E0FFC2] text-green-800",
 }
 const statusLabels: Record<string, string> = {
@@ -206,8 +207,8 @@ export default function GroupDetailPage() {
     }
   }
 
-  if (loading) return <div className="p-8 text-gray-500">Завантаження...</div>
-  if (!group) return <div className="p-8 text-gray-500">Група не знайдена</div>
+  if (loading) return <div className="p-4 md:p-8 text-gray-500">Завантаження...</div>
+  if (!group) return <div className="p-4 md:p-8 text-gray-500">Група не знайдена</div>
 
   const assignments = group.assignmentGroups ?? []
   const members = group.memberships ?? []
@@ -249,7 +250,7 @@ export default function GroupDetailPage() {
                     onChange={e => setEditName(e.target.value)}
                     className="text-lg font-bold bg-white/90 text-[#111111] border-white h-8 px-2"
                   />
-                  <Button size="sm" onClick={saveEdit} disabled={saving} className="h-8 bg-white text-[#3A7AA8] hover:bg-[#EBF5FD]">
+                  <Button size="sm" onClick={saveEdit} disabled={saving} className="h-8 bg-white text-[var(--accent-600)] hover:bg-[var(--accent-100)]">
                     <Check className="w-3 h-3" />
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => setEditing(false)} className="h-8 text-white hover:bg-white/20">
@@ -283,8 +284,8 @@ export default function GroupDetailPage() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white border-b border-gray-100 px-8">
-        <div className="flex gap-2 py-3">
+      <div className="bg-white border-b border-gray-100 px-4 md:px-8 overflow-x-auto">
+        <div className="flex gap-2 py-3 min-w-max">
           {TABS.map(t => {
             const Icon = t.icon
             const active = tab === t.id
@@ -294,8 +295,8 @@ export default function GroupDetailPage() {
                 onClick={() => setTab(t.id)}
                 className={`flex flex-col items-center gap-1.5 px-5 py-3 rounded-xl text-sm font-medium transition-all min-w-[90px] ${
                   active
-                    ? "bg-[#BED9F4] text-[#1e3a52]"
-                    : "bg-[#F5F8FA] text-gray-500 hover:bg-[#EBF5FD] hover:text-[#3A7AA8]"
+                    ? "bg-[var(--accent-300)] text-[var(--accent-900)]"
+                    : "bg-[#F5F8FA] text-gray-500 hover:bg-[var(--accent-100)] hover:text-[var(--accent-600)]"
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -307,7 +308,7 @@ export default function GroupDetailPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-6xl mx-auto px-8 py-6 flex gap-6">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 flex gap-6">
         {/* Main content */}
         <div className="flex-1 min-w-0">
           <AnimatePresence mode="wait">
@@ -331,14 +332,14 @@ export default function GroupDetailPage() {
                         >
                           <Link href={`/dashboard/assignments/${ag.assignment.id}`}>
                             <div className="flex items-start gap-4">
-                              <div className="w-10 h-10 rounded-full bg-[#EBF5FD] flex items-center justify-center flex-shrink-0">
-                                <BookOpen className="w-5 h-5 text-[#3A7AA8]" />
+                              <div className="w-10 h-10 rounded-full bg-[var(--accent-100)] flex items-center justify-center flex-shrink-0">
+                                <BookOpen className="w-5 h-5 text-[var(--accent-600)]" />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-start justify-between gap-2">
-                                  <h3 className="font-semibold text-[#111111] hover:text-[#3A7AA8] transition-colors">{ag.assignment.title}</h3>
+                                  <h3 className="font-semibold text-[#111111] hover:text-[var(--accent-600)] transition-colors">{ag.assignment.title}</h3>
                                   <span className="text-xs text-gray-400 flex-shrink-0">
-                                    {format(new Date(ag.assignment.dueDate), "d MMM", { locale: uk })}
+                                    {ag.assignment.dueDate ? format(new Date(ag.assignment.dueDate), "d MMM", { locale: uk }) : "Без дедлайну"}
                                   </span>
                                 </div>
                                 {ag.assignment.description && (
@@ -384,7 +385,7 @@ export default function GroupDetailPage() {
                               <p className="font-medium text-[#111111] text-sm">{ag.assignment.title}</p>
                             </td>
                             <td className="px-4 py-3 text-sm text-gray-500">
-                              {format(new Date(ag.assignment.dueDate), "d MMM yyyy", { locale: uk })}
+                              {ag.assignment.dueDate ? format(new Date(ag.assignment.dueDate), "d MMM yyyy", { locale: uk }) : "Без дедлайну"}
                             </td>
                             <td className="px-4 py-3 text-sm text-gray-500">
                               {ag.assignment.submissions?.length ?? 0} / {members.length}
@@ -411,7 +412,7 @@ export default function GroupDetailPage() {
                   <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Додати учня</h2>
                   <form onSubmit={addStudent} className="flex gap-2">
                     <Input placeholder="Нікнейм учня..." value={nickname} onChange={e => setNickname(e.target.value)} className="max-w-xs" />
-                    <Button type="submit" disabled={addingStudent} className="bg-[#BED9F4] hover:bg-[#5B9BD1] text-[#1e3a52] hover:text-white gap-2">
+                    <Button type="submit" disabled={addingStudent} className="bg-[var(--accent-300)] hover:bg-[var(--accent-500)] text-[var(--accent-900)] hover:text-white gap-2">
                       <UserPlus className="w-4 h-4" />
                       Додати
                     </Button>
@@ -433,9 +434,7 @@ export default function GroupDetailPage() {
                       {members.map((m: any) => (
                         <motion.div key={m.id} whileHover={{ backgroundColor: "#FFFDF8" }} className="flex items-center justify-between px-5 py-3 transition-colors">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-[#EBF5FD] flex items-center justify-center text-sm font-bold text-[#3A7AA8]">
-                              {m.user.name.charAt(0).toUpperCase()}
-                            </div>
+                            <UserAvatar name={m.user.name} avatar={m.user.avatar} className="w-9 h-9 bg-[var(--accent-100)] text-sm font-bold text-[var(--accent-600)]" />
                             <div>
                               <p className="font-medium text-[#111111] text-sm">{m.user.name}</p>
                               <p className="text-xs text-gray-400">@{m.user.nickname}</p>
@@ -496,7 +495,7 @@ export default function GroupDetailPage() {
                                       </Link>
                                     ) : sub ? (
                                       <Link href={`/dashboard/assignments/${ag.assignment.id}`}>
-                                        <span className="inline-block bg-[#EBF5FD] text-[#3A7AA8] text-xs px-2 py-1 rounded-lg">
+                                        <span className="inline-block bg-[var(--accent-100)] text-[var(--accent-600)] text-xs px-2 py-1 rounded-lg">
                                           Здано
                                         </span>
                                       </Link>
@@ -523,7 +522,7 @@ export default function GroupDetailPage() {
           <div className="bg-white rounded-xl border border-gray-100 p-4">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Код класу</h3>
             <div className="flex items-center gap-2 mb-3">
-              <code className="flex-1 font-mono font-bold text-[#3A7AA8] bg-[#EBF5FD] px-3 py-2 rounded-lg text-sm tracking-wider">
+              <code className="flex-1 font-mono font-bold text-[var(--accent-600)] bg-[var(--accent-100)] px-3 py-2 rounded-lg text-sm tracking-wider">
                 {group.joinCode}
               </code>
             </div>
@@ -582,7 +581,7 @@ export default function GroupDetailPage() {
               )}
               <div className="flex items-center gap-2">
                 <label className="flex-1">
-                  <div className={`flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-[#BED9F4] rounded-xl p-4 cursor-pointer transition-colors ${uploadingLogo ? "opacity-50 pointer-events-none" : ""}`}>
+                  <div className={`flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-[var(--accent-300)] rounded-xl p-4 cursor-pointer transition-colors ${uploadingLogo ? "opacity-50 pointer-events-none" : ""}`}>
                     <Image className="w-4 h-4 text-gray-400" />
                     <span className="text-sm text-gray-500">{uploadingLogo ? "Завантаження..." : "Обрати зображення"}</span>
                   </div>
@@ -611,7 +610,7 @@ export default function GroupDetailPage() {
               )}
               <div className="flex items-center gap-2">
                 <label className="flex-1">
-                  <div className={`flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-[#BED9F4] rounded-xl p-4 cursor-pointer transition-colors ${uploadingCover ? "opacity-50 pointer-events-none" : ""}`}>
+                  <div className={`flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-[var(--accent-300)] rounded-xl p-4 cursor-pointer transition-colors ${uploadingCover ? "opacity-50 pointer-events-none" : ""}`}>
                     <Image className="w-4 h-4 text-gray-400" />
                     <span className="text-sm text-gray-500">{uploadingCover ? "Завантаження..." : "Обрати зображення"}</span>
                   </div>
@@ -636,7 +635,7 @@ export default function GroupDetailPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setMediaOpen(false)}>Скасувати</Button>
-            <Button onClick={saveMedia} disabled={savingMedia || uploadingLogo || uploadingCover} className="bg-[#BED9F4] hover:bg-[#5B9BD1] text-[#1e3a52] hover:text-white">
+            <Button onClick={saveMedia} disabled={savingMedia || uploadingLogo || uploadingCover} className="bg-[var(--accent-300)] hover:bg-[var(--accent-500)] text-[var(--accent-900)] hover:text-white">
               {savingMedia ? "Збереження..." : "Зберегти"}
             </Button>
           </DialogFooter>

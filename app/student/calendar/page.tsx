@@ -36,7 +36,7 @@ export default async function StudentCalendarPage() {
   const days = eachDayOfInterval({ start, end })
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Календар</h1>
         <p className="text-gray-500 mt-1">{format(now, "LLLL yyyy", { locale: uk })}</p>
@@ -51,7 +51,7 @@ export default async function StudentCalendarPage() {
         <div className="grid grid-cols-7 gap-1">
           {Array.from({ length: (days[0].getDay() || 7) - 1 }).map((_, i) => <div key={i} />)}
           {days.map(day => {
-            const dayAssignments = assignments.filter(a => isSameDay(new Date(a.dueDate), day))
+            const dayAssignments = assignments.filter(a => isSameDay(new Date(a.dueDate!), day))
             return (
               <div key={day.toISOString()} className={`min-h-[80px] p-1.5 rounded-lg border ${isToday(day) ? "bg-sky-light border-blue-200" : "border-transparent hover:bg-gray-50"}`}>
                 <div className={`text-sm font-medium mb-1 ${isToday(day) ? "text-sky-darker" : "text-gray-700"}`}>
@@ -79,12 +79,12 @@ export default async function StudentCalendarPage() {
             {assignments.map(a => (
               <Link key={a.id} href={`/student/assignments/${a.id}`} className="flex items-center gap-4 py-2 hover:bg-gray-50 rounded-lg px-2">
                 <div className="text-center min-w-[48px]">
-                  <div className="text-2xl font-bold text-sky-darker">{format(new Date(a.dueDate), "d")}</div>
-                  <div className="text-xs text-gray-400">{format(new Date(a.dueDate), "EEE", { locale: uk })}</div>
+                  <div className="text-2xl font-bold text-sky-darker">{format(new Date(a.dueDate!), "d")}</div>
+                  <div className="text-xs text-gray-400">{format(new Date(a.dueDate!), "EEE", { locale: uk })}</div>
                 </div>
                 <div className="flex-1">
                   <div className="font-medium text-gray-900">{a.title}</div>
-                  <div className="text-xs text-gray-400">{format(new Date(a.dueDate), "HH:mm")}</div>
+                  <div className="text-xs text-gray-400">{format(new Date(a.dueDate!), "HH:mm")}</div>
                 </div>
                 <div>
                   {a.submissions[0] ? (

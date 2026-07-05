@@ -44,10 +44,10 @@ export default function StudentGroupsPage() {
     setJoining(false)
   }
 
-  if (loading) return <div className="p-8 text-gray-500">Завантаження...</div>
+  if (loading) return <div className="p-4 md:p-8 text-gray-500">Завантаження...</div>
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Мої групи</h1>

@@ -9,7 +9,7 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { GraduationCap } from "lucide-react"
+import { GraduationCap, Eye, EyeOff } from "lucide-react"
 import { toast } from "sonner"
 import { signIn } from "next-auth/react"
 
@@ -29,6 +29,8 @@ type RegisterForm = z.infer<typeof registerSchema>
 export default function RegisterPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
@@ -88,12 +90,22 @@ export default function RegisterPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Пароль</Label>
-              <Input id="password" type="password" placeholder="••••••••" {...register("password")} className={errors.password ? "border-red-300" : ""} />
+              <div className="relative">
+                <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" {...register("password")} className={errors.password ? "border-red-300 pr-10" : "pr-10"} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
               {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Підтвердити пароль</Label>
-              <Input id="confirmPassword" type="password" placeholder="••••••••" {...register("confirmPassword")} className={errors.confirmPassword ? "border-red-300" : ""} />
+              <div className="relative">
+                <Input id="confirmPassword" type={showConfirm ? "text" : "password"} placeholder="••••••••" {...register("confirmPassword")} className={errors.confirmPassword ? "border-red-300 pr-10" : "pr-10"} />
+                <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
               {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>}
             </div>
             <Button type="submit" disabled={isLoading} className="w-full bg-sky-custom hover:bg-sky-dark rounded-xl h-11 mt-2">

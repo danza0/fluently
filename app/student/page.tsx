@@ -31,18 +31,18 @@ export default async function StudentDashboard() {
         include: { grade: true },
       },
     },
-    orderBy: { dueDate: "asc" },
+    orderBy: { dueDate: { sort: "asc", nulls: "last" } },
   })
 
   const now = new Date()
-  const pending = assignments.filter(a => new Date(a.dueDate) >= now && !a.submissions[0])
+  const pending = assignments.filter(a => (!a.dueDate || new Date(a.dueDate) >= now) && !a.submissions[0])
   const submitted = assignments.filter(a => a.submissions[0])
   const graded = assignments.filter(a => a.submissions[0]?.status === "GRADED")
   const grades = graded.map(a => a.submissions[0]?.grade?.score).filter(Boolean) as number[]
   const avgGrade = grades.length > 0 ? (grades.reduce((a, b) => a + b, 0) / grades.length).toFixed(1) : "—"
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Вітаємо, {session!.user?.name}! 👋</h1>
         <p className="text-gray-500 mt-1">Ваш навчальний кабінет</p>

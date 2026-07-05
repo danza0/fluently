@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { User, BookOpen } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { UserAvatar } from "@/components/ui/user-avatar"
 
 export default async function StudentsPage() {
   const session = await getServerSession(authOptions)
@@ -17,7 +18,7 @@ export default async function StudentsPage() {
   })
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Учні</h1>
         <p className="text-gray-500 mt-1">Всі зареєстровані учні платформи</p>
@@ -35,11 +36,9 @@ export default async function StudentsPage() {
               const grades = student.submissions.filter(s => s.grade).map(s => s.grade!.score)
               const avgGrade = grades.length > 0 ? (grades.reduce((a, b) => a + b, 0) / grades.length).toFixed(1) : null
               return (
-                <div key={student.id} className="flex items-center justify-between p-4 hover:bg-gray-50">
+                <div key={student.id} className="flex items-center justify-between p-4 hover:bg-gray-50 flex-wrap gap-2">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-sky-mid rounded-full flex items-center justify-center">
-                      <span className="text-sky-darker font-semibold text-sm">{student.name.charAt(0)}</span>
-                    </div>
+                    <UserAvatar name={student.name} avatar={student.avatar} className="w-10 h-10 bg-sky-mid text-sky-darker font-semibold text-sm" />
                     <div>
                       <div className="font-medium text-gray-900">{student.name}</div>
                       <div className="text-sm text-gray-400">@{student.nickname} · {student.email}</div>

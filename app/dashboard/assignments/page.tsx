@@ -18,11 +18,11 @@ export default async function AssignmentsPage() {
       assignmentStudents: { include: { student: { select: publicUserSelect } } },
       submissions: { include: { grade: true, student: { select: publicUserSelect } } },
     },
-    orderBy: { dueDate: "asc" },
+    orderBy: { dueDate: { sort: "asc", nulls: "last" } },
   })
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Завдання</h1>

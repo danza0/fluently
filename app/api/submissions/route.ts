@@ -50,7 +50,7 @@ export async function POST(request: Request) {
   })
   if (!assignment) return NextResponse.json({ error: "Assignment not found" }, { status: 404 })
 
-  const isLate = new Date() > assignment.dueDate
+  const isLate = assignment.dueDate ? new Date() > assignment.dueDate : false
 
   const existing = await prisma.submission.findUnique({
     where: { assignmentId_studentId: { assignmentId, studentId: user.id } },

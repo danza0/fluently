@@ -60,7 +60,7 @@ export default function StudentDiaryPage() {
     currentUserId ? lesson.attendances.find(a => a.student.id === currentUserId) : null
 
   return (
-    <div className="p-6 min-h-screen bg-[#FFFDF8]">
+    <div className="p-4 md:p-6 min-h-screen bg-[#FFFDF8]">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -92,9 +92,9 @@ export default function StudentDiaryPage() {
             return (
               <div key={idx} className="flex flex-col gap-2 min-h-[300px]">
                 {/* Day header */}
-                <div className={`rounded-lg p-2 text-center ${today ? "bg-[#BED9F4] text-[#1e3a52]" : "bg-white border border-gray-100 text-gray-600"}`}>
+                <div className={`rounded-lg p-2 text-center ${today ? "bg-[var(--accent-300)] text-[var(--accent-900)]" : "bg-white border border-gray-100 text-gray-600"}`}>
                   <div className="text-xs font-semibold uppercase tracking-wide">{DAYS_UA[idx].slice(0, 2)}</div>
-                  <div className={`text-lg font-bold ${today ? "text-[#1e3a52]" : "text-[#111111]"}`}>{format(day, "d")}</div>
+                  <div className={`text-lg font-bold ${today ? "text-[var(--accent-900)]" : "text-[#111111]"}`}>{format(day, "d")}</div>
                   <div className="text-xs text-gray-400">{format(day, "MMM", { locale: uk })}</div>
                 </div>
 
@@ -111,12 +111,12 @@ export default function StudentDiaryPage() {
                         exit={{ opacity: 0, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
                         onClick={() => setSelected(lesson === selected ? null : lesson)}
-                        className="bg-white border border-[#D5EAFB] rounded-xl p-3 hover:shadow-md hover:border-[#BED9F4] transition-all cursor-pointer"
+                        className="bg-white border border-[var(--accent-200)] rounded-xl p-3 hover:shadow-md hover:border-[var(--accent-300)] transition-all cursor-pointer"
                       >
                         <p className="text-xs font-bold text-[#111111] leading-tight mb-1 line-clamp-2">{lesson.title}</p>
 
                         {lesson.theme && (
-                          <p className="text-[10px] text-[#3A7AA8] bg-[#EBF5FD] px-1.5 py-0.5 rounded mb-1.5 line-clamp-1">{lesson.theme}</p>
+                          <p className="text-[10px] text-[var(--accent-600)] bg-[var(--accent-100)] px-1.5 py-0.5 rounded mb-1.5 line-clamp-1">{lesson.theme}</p>
                         )}
 
                         <div className="flex items-center gap-1 text-[10px] text-gray-500 mb-0.5">
@@ -158,12 +158,12 @@ export default function StudentDiaryPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-6 right-6 w-80 bg-white rounded-2xl shadow-xl border border-[#D5EAFB] p-5 z-50"
+            className="fixed bottom-6 right-6 w-80 bg-white rounded-2xl shadow-xl border border-[var(--accent-200)] p-5 z-50"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1 min-w-0">
                 <h3 className="font-bold text-[#111111] text-sm">{selected.title}</h3>
-                {selected.theme && <p className="text-xs text-[#3A7AA8] mt-0.5">{selected.theme}</p>}
+                {selected.theme && <p className="text-xs text-[var(--accent-600)] mt-0.5">{selected.theme}</p>}
               </div>
               <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-700 ml-2 text-lg leading-none">×</button>
             </div>
@@ -183,7 +183,7 @@ export default function StudentDiaryPage() {
               {selected.assignment && (
                 <div className="flex items-center gap-2 pt-1">
                   <BookOpen className="w-3.5 h-3.5 text-gray-400" />
-                  <a href={`/student/assignments/${selected.assignment.id}`} className="text-[#3A7AA8] hover:underline">
+                  <a href={`/student/assignments/${selected.assignment.id}`} className="text-[var(--accent-600)] hover:underline">
                     {selected.assignment.title}
                   </a>
                 </div>
@@ -193,7 +193,7 @@ export default function StudentDiaryPage() {
                   href={selected.meetLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 pt-1 text-[#3A7AA8] hover:underline"
+                  className="flex items-center gap-2 pt-1 text-[var(--accent-600)] hover:underline"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   Приєднатися до уроку

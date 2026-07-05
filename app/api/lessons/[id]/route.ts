@@ -12,10 +12,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const lesson = await prisma.lesson.findUnique({
     where: { id },
     include: {
-      group: { include: { memberships: { include: { user: { select: { id: true, name: true, nickname: true } } } } } },
+      group: { include: { memberships: { include: { user: { select: { id: true, name: true, nickname: true, avatar: true } } } } } },
       teacher: { select: { id: true, name: true, nickname: true } },
       assignment: { select: { id: true, title: true } },
-      attendances: { include: { student: { select: { id: true, name: true, nickname: true } } } },
+      // Students only receive their own attendance records
+      attendances: {
+        where: user.role === "TEACHER" ? undefined : { studentId: user.id },
+        include: { student: { select: { id: true, name: true, nickname: true } } },
+      },
     },
   })
   if (!lesson) return NextResponse.json({ error: "Not found" }, { status: 404 })

@@ -14,6 +14,7 @@ import { Select } from "@/components/ui/select"
 import { toast } from "sonner"
 import { format, addDays, startOfWeek, isToday } from "date-fns"
 import { uk } from "date-fns/locale"
+import { UserAvatar } from "@/components/ui/user-avatar"
 
 interface Lesson {
   id: string
@@ -33,7 +34,7 @@ interface Lesson {
 interface Group {
   id: string
   name: string
-  memberships: { user: { id: string; name: string; nickname: string } }[]
+  memberships: { user: { id: string; name: string; nickname: string; avatar?: string | null } }[]
 }
 
 const emptyForm = {
@@ -269,7 +270,7 @@ export default function TimetablePage() {
       .sort((a, b) => a.startTime.localeCompare(b.startTime))
 
   return (
-    <div className="p-6 min-h-screen bg-[#FFFDF8]">
+    <div className="p-4 md:p-6 min-h-screen bg-[#FFFDF8]">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -290,7 +291,7 @@ export default function TimetablePage() {
           </Button>
           <Button
             onClick={() => openCreate()}
-            className="ml-4 bg-[#BED9F4] hover:bg-[#5B9BD1] text-[#1e3a52] hover:text-white gap-2 font-medium"
+            className="ml-4 bg-[var(--accent-300)] hover:bg-[var(--accent-500)] text-[var(--accent-900)] hover:text-white gap-2 font-medium"
           >
             <Plus className="w-4 h-4" />
             Додати урок
@@ -302,7 +303,7 @@ export default function TimetablePage() {
       {loading ? (
         <div className="text-gray-400 py-16 text-center">Завантаження...</div>
       ) : (
-        <div className="grid grid-cols-7 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-7 gap-3">
           {weekDays.map((day, idx) => {
             const dayLessons = lessonsOnDay(day)
             const today = isToday(day)
@@ -311,13 +312,13 @@ export default function TimetablePage() {
                 {/* Day header */}
                 <div
                   className={`rounded-lg p-2 text-center cursor-pointer transition-colors ${
-                    today ? "bg-[#BED9F4] text-[#1e3a52]" : "bg-white border border-gray-100 text-gray-600 hover:bg-[#EBF5FD]"
+                    today ? "bg-[var(--accent-300)] text-[var(--accent-900)]" : "bg-white border border-gray-100 text-gray-600 hover:bg-[var(--accent-100)]"
                   }`}
                   onClick={() => openCreate(day)}
                   title="Додати урок на цей день"
                 >
                   <div className="text-xs font-semibold uppercase tracking-wide">{DAYS_UA[idx].slice(0, 2)}</div>
-                  <div className={`text-lg font-bold ${today ? "text-[#1e3a52]" : "text-[#111111]"}`}>
+                  <div className={`text-lg font-bold ${today ? "text-[var(--accent-900)]" : "text-[#111111]"}`}>
                     {format(day, "d")}
                   </div>
                   <div className="text-xs text-gray-400">{format(day, "MMM", { locale: uk })}</div>
@@ -332,7 +333,7 @@ export default function TimetablePage() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.2 }}
-                      className="bg-white border border-[#D5EAFB] rounded-xl p-3 group hover:shadow-md hover:border-[#BED9F4] transition-all cursor-pointer"
+                      className="bg-white border border-[var(--accent-200)] rounded-xl p-3 group hover:shadow-md hover:border-[var(--accent-300)] transition-all cursor-pointer"
                       onClick={() => router.push(`/dashboard/timetable/${lesson.id}`)}
                     >
                       <div className="flex items-start justify-between gap-1 mb-1">
@@ -340,14 +341,14 @@ export default function TimetablePage() {
                         <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                           <button
                             onClick={e => { e.stopPropagation(); openAttendance(lesson) }}
-                            className="p-0.5 rounded hover:bg-[#EBF5FD] text-gray-400 hover:text-[#3A7AA8]"
+                            className="p-0.5 rounded hover:bg-[var(--accent-100)] text-gray-400 hover:text-[var(--accent-600)]"
                             title="Відвідуваність"
                           >
                             <UserCheck className="w-3 h-3" />
                           </button>
                           <button
                             onClick={e => { e.stopPropagation(); openEdit(lesson) }}
-                            className="p-0.5 rounded hover:bg-[#EBF5FD] text-gray-400 hover:text-[#3A7AA8]"
+                            className="p-0.5 rounded hover:bg-[var(--accent-100)] text-gray-400 hover:text-[var(--accent-600)]"
                             title="Редагувати"
                           >
                             <Pencil className="w-3 h-3" />
@@ -363,7 +364,7 @@ export default function TimetablePage() {
                       </div>
 
                       {lesson.theme && (
-                        <div className="text-[10px] text-[#3A7AA8] bg-[#EBF5FD] px-1.5 py-0.5 rounded mb-1.5 line-clamp-1">
+                        <div className="text-[10px] text-[var(--accent-600)] bg-[var(--accent-100)] px-1.5 py-0.5 rounded mb-1.5 line-clamp-1">
                           {lesson.theme}
                         </div>
                       )}
@@ -390,7 +391,7 @@ export default function TimetablePage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={e => e.stopPropagation()}
-                          className="flex items-center gap-1 text-[10px] text-[#3A7AA8] hover:underline mt-1"
+                          className="flex items-center gap-1 text-[10px] text-[var(--accent-600)] hover:underline mt-1"
                         >
                           <ExternalLink className="w-2.5 h-2.5" />
                           Meet
@@ -421,7 +422,7 @@ export default function TimetablePage() {
                 {/* Add button */}
                 <button
                   onClick={() => openCreate(day)}
-                  className="mt-auto text-[10px] text-gray-400 hover:text-[#3A7AA8] hover:bg-[#EBF5FD] rounded-lg p-1.5 transition-colors flex items-center justify-center gap-1 border border-dashed border-gray-200 hover:border-[#BED9F4]"
+                  className="mt-auto text-[10px] text-gray-400 hover:text-[var(--accent-600)] hover:bg-[var(--accent-100)] rounded-lg p-1.5 transition-colors flex items-center justify-center gap-1 border border-dashed border-gray-200 hover:border-[var(--accent-300)]"
                 >
                   <Plus className="w-3 h-3" />
                   Урок
@@ -455,19 +456,19 @@ export default function TimetablePage() {
               <div>
                 <Label htmlFor="groupId">Група *</Label>
                 {groupsLoading ? (
-                  <div className="flex h-9 w-full items-center rounded-md border border-[#BED9F4] bg-[#EBF5FD] px-3 text-sm text-[#3A7AA8]">
+                  <div className="flex h-9 w-full items-center rounded-md border border-[var(--accent-300)] bg-[var(--accent-100)] px-3 text-sm text-[var(--accent-600)]">
                     Завантаження груп...
                   </div>
                 ) : groups.length === 0 ? (
-                  <div className="flex h-9 w-full items-center rounded-md border border-[#BED9F4] bg-[#EBF5FD] px-3 text-sm text-[#3A7AA8]">
-                    <span>Немає груп.&nbsp;<Link href="/dashboard/groups" className="underline font-medium hover:text-[#3A7AA8]" aria-label="Перейти на сторінку груп та створити групу">Створіть групу</Link></span>
+                  <div className="flex h-9 w-full items-center rounded-md border border-[var(--accent-300)] bg-[var(--accent-100)] px-3 text-sm text-[var(--accent-600)]">
+                    <span>Немає груп.&nbsp;<Link href="/dashboard/groups" className="underline font-medium hover:text-[var(--accent-600)]" aria-label="Перейти на сторінку груп та створити групу">Створіть групу</Link></span>
                   </div>
                 ) : (
                   <Select
                     id="groupId"
                     value={form.groupId}
                     onChange={e => setForm(f => ({ ...f, groupId: e.target.value }))}
-                    className="h-9 border-[#BED9F4] focus:ring-[#5B9BD1]"
+                    className="h-9 border-[var(--accent-300)] focus:ring-[var(--accent-500)]"
                   >
                     <option value="">Обрати групу</option>
                     {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
@@ -499,7 +500,7 @@ export default function TimetablePage() {
                 <img src={form.coverImage} alt="Обкладинка" className="w-full h-24 rounded-xl object-cover border border-gray-200 mb-2 mt-1" />
               )}
               <label>
-                <div className={`flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-[#BED9F4] rounded-xl p-3 cursor-pointer transition-colors text-sm text-gray-500 ${uploadingCover ? "opacity-50 pointer-events-none" : ""}`}>
+                <div className={`flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-[var(--accent-300)] rounded-xl p-3 cursor-pointer transition-colors text-sm text-gray-500 ${uploadingCover ? "opacity-50 pointer-events-none" : ""}`}>
                   <Image className="w-4 h-4 text-gray-400" />
                   {uploadingCover ? "Завантаження..." : form.coverImage ? "Змінити зображення" : "Додати обкладинку"}
                 </div>
@@ -512,7 +513,7 @@ export default function TimetablePage() {
             <Button
               onClick={saveLesson}
               disabled={saving || uploadingCover}
-              className="bg-[#BED9F4] hover:bg-[#5B9BD1] text-[#1e3a52] hover:text-white"
+              className="bg-[var(--accent-300)] hover:bg-[var(--accent-500)] text-[var(--accent-900)] hover:text-white"
             >
               {saving ? "Збереження..." : "Зберегти"}
             </Button>
@@ -551,9 +552,7 @@ export default function TimetablePage() {
                 return (
                   <div key={m.user.id} className="py-3 border-b border-gray-50 last:border-0">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-[#EBF5FD] flex items-center justify-center text-xs font-bold text-[#3A7AA8] flex-shrink-0">
-                        {m.user.name.charAt(0).toUpperCase()}
-                      </div>
+                      <UserAvatar name={m.user.name} avatar={m.user.avatar} className="w-8 h-8 bg-[var(--accent-100)] text-xs font-bold text-[var(--accent-600)]" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-[#111111] leading-tight">{m.user.name}</p>
                         <p className="text-xs text-gray-400">@{m.user.nickname}</p>
@@ -584,7 +583,7 @@ export default function TimetablePage() {
                         ...prev,
                         [m.user.id]: { ...prev[m.user.id], note: e.target.value }
                       }))}
-                      className="text-xs h-8 bg-[#FAFBFD] border-gray-200 focus:border-[#BED9F4] placeholder:text-gray-300"
+                      className="text-xs h-8 bg-[#FAFBFD] border-gray-200 focus:border-[var(--accent-300)] placeholder:text-gray-300"
                     />
                   </div>
                 )
@@ -601,7 +600,7 @@ export default function TimetablePage() {
             <Button
               onClick={saveAttendance}
               disabled={savingAttendance}
-              className="bg-[#BED9F4] hover:bg-[#5B9BD1] text-[#1e3a52] hover:text-white"
+              className="bg-[var(--accent-300)] hover:bg-[var(--accent-500)] text-[var(--accent-900)] hover:text-white"
             >
               {savingAttendance ? "Збереження..." : "Зберегти"}
             </Button>

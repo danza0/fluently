@@ -14,7 +14,7 @@ import { GraduationCap, Eye, EyeOff } from "lucide-react"
 import { toast } from "sonner"
 
 const loginSchema = z.object({
-  email: z.string().email("Введіть коректну email адресу"),
+  email: z.string().min(1, "Введіть email або нікнейм"),
   password: z.string().min(1, "Введіть пароль"),
 })
 
@@ -39,7 +39,7 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        toast.error("Невірний email або пароль")
+        toast.error("Невірні дані для входу")
       } else {
         const res = await fetch("/api/auth/session")
         const session = await res.json()
@@ -72,8 +72,8 @@ export default function LoginPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-sky-mid p-8">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email">Електронна пошта</Label>
-              <Input id="email" type="email" placeholder="email@example.com" {...register("email")} className={errors.email ? "border-red-300" : ""} />
+              <Label htmlFor="email">Email або нікнейм</Label>
+              <Input id="email" type="text" placeholder="email@example.com або нікнейм" {...register("email")} className={errors.email ? "border-red-300" : ""} />
               {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
             </div>
             <div className="space-y-2">

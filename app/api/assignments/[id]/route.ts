@@ -70,6 +70,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   if (body.dueDate && isNaN(new Date(body.dueDate).getTime())) {
     return NextResponse.json({ error: "Невірна дата" }, { status: 400 })
   }
+  // dueDate: absent = keep as is; null/empty = remove deadline; string = new deadline
+  const dueDateUpdate = "dueDate" in body
+    ? (body.dueDate ? new Date(body.dueDate) : null)
+    : undefined
   if (body.maxGrade !== undefined && (!Number.isInteger(body.maxGrade) || body.maxGrade < 1 || body.maxGrade > 12)) {
     return NextResponse.json({ error: "Невірна максимальна оцінка" }, { status: 400 })
   }
@@ -79,7 +83,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     data: {
       title: body.title,
       description: body.description,
-      dueDate: body.dueDate ? new Date(body.dueDate) : undefined,
+      dueDate: dueDateUpdate,
       maxGrade: body.maxGrade,
     },
   })

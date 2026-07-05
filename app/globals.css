@@ -2,25 +2,34 @@
 @import "tailwindcss";
 
 :root {
+  /* Per-user accent palette (overridden per user in dashboard/student layouts) */
+  --accent-100: #EBF5FD;
+  --accent-200: #D5EAFB;
+  --accent-300: #BED9F4;
+  --accent-500: #5B9BD1;
+  --accent-600: #3A7AA8;
+  --accent-700: #2d618a;
+  --accent-900: #1e3a52;
+
   --background: #FFFDF8;
   --foreground: #111111;
   --card: #FFFFFF;
   --card-foreground: #111111;
   --popover: #FFFFFF;
   --popover-foreground: #111111;
-  --primary: #BED9F4;
-  --primary-foreground: #1e3a52;
-  --secondary: #EBF5FD;
-  --secondary-foreground: #1e3a52;
-  --muted: #EBF5FD;
-  --muted-foreground: #5B9BD1;
-  --accent: #BED9F4;
-  --accent-foreground: #1e3a52;
+  --primary: var(--accent-300);
+  --primary-foreground: var(--accent-900);
+  --secondary: var(--accent-100);
+  --secondary-foreground: var(--accent-900);
+  --muted: var(--accent-100);
+  --muted-foreground: var(--accent-500);
+  --accent: var(--accent-300);
+  --accent-foreground: var(--accent-900);
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #D5EAFB;
-  --input: #D5EAFB;
-  --ring: #BED9F4;
+  --border: var(--accent-200);
+  --input: var(--accent-200);
+  --ring: var(--accent-300);
   --radius: 0.5rem;
 }
 
@@ -28,11 +37,11 @@
   --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-sky-custom: #BED9F4;
-  --color-sky-light: #EBF5FD;
-  --color-sky-mid: #D5EAFB;
-  --color-sky-dark: #5B9BD1;
-  --color-sky-darker: #3A7AA8;
+  --color-sky-custom: var(--accent-300);
+  --color-sky-light: var(--accent-100);
+  --color-sky-mid: var(--accent-200);
+  --color-sky-dark: var(--accent-500);
+  --color-sky-darker: var(--accent-600);
   --color-milk: #FFFDF8;
   --color-milk-dark: #F5F0E8;
   --color-milk-light: #FFFFFF;

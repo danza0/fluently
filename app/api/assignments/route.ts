@@ -8,7 +8,7 @@ import { publicUserSelect } from "@/lib/public-user"
 const createAssignmentSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
-  dueDate: z.string(),
+  dueDate: z.string().nullable().optional(),
   maxGrade: z.number().min(1).max(12).default(12),
   submissionType: z.enum(["TEXT", "IMAGE", "FILE", "MIXED"]).default("MIXED"),
   groupIds: z.array(z.string()).optional(),
@@ -30,7 +30,7 @@ export async function GET() {
         submissions: { include: { grade: true, student: { select: publicUserSelect } } },
         attachments: true,
       },
-      orderBy: { dueDate: "asc" },
+      orderBy: { dueDate: { sort: "asc", nulls: "last" } },
     })
     return NextResponse.json(assignments)
   } else {
@@ -55,7 +55,7 @@ export async function GET() {
         },
         attachments: true,
       },
-      orderBy: { dueDate: "asc" },
+      orderBy: { dueDate: { sort: "asc", nulls: "last" } },
     })
     return NextResponse.json(assignments)
   }
@@ -71,9 +71,12 @@ export async function POST(request: Request) {
     const body = await request.json()
     const data = createAssignmentSchema.parse(body)
 
-    const dueDate = new Date(data.dueDate)
-    if (isNaN(dueDate.getTime())) {
-      return NextResponse.json({ error: "Невірна дата" }, { status: 400 })
+    let dueDate: Date | null = null
+    if (data.dueDate) {
+      dueDate = new Date(data.dueDate)
+      if (isNaN(dueDate.getTime())) {
+        return NextResponse.json({ error: "Невірна дата" }, { status: 400 })
+      }
     }
 
     if (data.groupIds?.length) {

@@ -84,42 +84,42 @@ export default function StudentAssignmentPage() {
     }
   }
 
-  if (loading) return <div className="p-8 text-gray-500">Завантаження...</div>
-  if (!assignment) return <div className="p-8 text-gray-500">Завдання не знайдено</div>
+  if (loading) return <div className="p-4 md:p-8 text-gray-500">Завантаження...</div>
+  if (!assignment) return <div className="p-4 md:p-8 text-gray-500">Завдання не знайдено</div>
 
   const submission = assignment.submissions?.[0]
-  const dueDate = new Date(assignment.dueDate)
-  const isOverdue = new Date() > dueDate
+  const dueDate = assignment.dueDate ? new Date(assignment.dueDate) : null
+  const isOverdue = dueDate ? new Date() > dueDate : false
   const isGraded = submission?.status === "GRADED"
 
   return (
     <div className="min-h-screen bg-[#FFFDF8]">
       {/* Banner */}
-      <div className="w-full bg-[#BED9F4] px-8 py-6">
-        <Link href="/student" className="inline-flex items-center gap-2 text-[#1e3a52]/70 hover:text-[#1e3a52] mb-4 text-sm">
+      <div className="w-full bg-[var(--accent-300)] px-4 md:px-8 py-6">
+        <Link href="/student" className="inline-flex items-center gap-2 text-[var(--accent-900)]/70 hover:text-[var(--accent-900)] mb-4 text-sm">
           <ArrowLeft className="w-4 h-4" />
           Назад
         </Link>
-        <h1 className="text-2xl font-bold text-[#1e3a52]">{assignment.title}</h1>
+        <h1 className="text-2xl font-bold text-[var(--accent-900)]">{assignment.title}</h1>
         {assignment.assignmentGroups?.length > 0 && (
           <div className="flex gap-2 mt-2 flex-wrap">
             {assignment.assignmentGroups.map((ag: any) => (
-              <span key={ag.id} className="text-xs bg-white/40 text-[#1e3a52] px-2 py-0.5 rounded-full">{ag.group.name}</span>
+              <span key={ag.id} className="text-xs bg-white/40 text-[var(--accent-900)] px-2 py-0.5 rounded-full">{ag.group.name}</span>
             ))}
           </div>
         )}
       </div>
 
-      <div className="max-w-3xl mx-auto px-8 py-6 space-y-4">
+      <div className="max-w-3xl mx-auto px-4 md:px-8 py-6 space-y-4">
         {/* Task info card */}
         <div className="bg-white rounded-xl border border-gray-100 p-5 flex items-start gap-4">
           {/* Date badge */}
-          <div className="flex flex-col items-center justify-center bg-[#BED9F4] rounded-xl px-4 py-3 flex-shrink-0">
-            <span className="text-[10px] font-semibold text-[#1e3a52] uppercase tracking-wide">
-              {format(dueDate, "MMM", { locale: uk })}
+          <div className="flex flex-col items-center justify-center bg-[var(--accent-300)] rounded-xl px-4 py-3 flex-shrink-0">
+            <span className="text-[10px] font-semibold text-[var(--accent-900)] uppercase tracking-wide">
+              {dueDate ? format(dueDate, "MMM", { locale: uk }) : "Без"}
             </span>
-            <span className="text-2xl font-bold text-[#1e3a52] leading-none">
-              {format(dueDate, "d")}
+            <span className="text-2xl font-bold text-[var(--accent-900)] leading-none">
+              {dueDate ? format(dueDate, "d") : "—"}
             </span>
           </div>
           <div className="flex-1 min-w-0">
@@ -136,7 +136,7 @@ export default function StudentAssignmentPage() {
             <div className="flex items-center gap-1 text-sm text-gray-500">
               {isOverdue ? <AlertCircle className="w-4 h-4 text-red-400" /> : <Calendar className="w-4 h-4" />}
               <span className={isOverdue ? "text-red-500" : ""}>
-                {format(dueDate, "d MMMM yyyy, HH:mm", { locale: uk })}
+                {dueDate ? format(dueDate, "d MMMM yyyy, HH:mm", { locale: uk }) : "Без дедлайну"}
               </span>
             </div>
             {assignment.description && (
@@ -171,7 +171,7 @@ export default function StudentAssignmentPage() {
             <div className="space-y-2">
               {assignment.attachments.map((att: any) => (
                 <a key={att.id} href={att.fileUrl} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-[#3A7AA8] hover:underline">
+                  className="flex items-center gap-2 text-sm text-[var(--accent-600)] hover:underline">
                   {att.fileType.startsWith("image/") ? <ImageIcon className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
                   {att.fileName}
                   <Download className="w-3 h-3" />
@@ -184,7 +184,7 @@ export default function StudentAssignmentPage() {
         {/* Dropbox section */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <h2 className="text-base font-semibold text-[#111111] mb-4 flex items-center gap-2">
-            <Upload className="w-5 h-5 text-[#3A7AA8]" />
+            <Upload className="w-5 h-5 text-[var(--accent-600)]" />
             {submission ? "Ваша відповідь" : "Здати завдання"}
           </h2>
 
@@ -201,8 +201,8 @@ export default function StudentAssignmentPage() {
           )}
 
           {submission?.attachments?.length > 0 && (
-            <div className="mb-4 p-3 bg-[#EBF5FD] rounded-lg">
-              <p className="text-sm font-medium text-[#3A7AA8] mb-2">Завантажені файли:</p>
+            <div className="mb-4 p-3 bg-[var(--accent-100)] rounded-lg">
+              <p className="text-sm font-medium text-[var(--accent-600)] mb-2">Завантажені файли:</p>
               <div className="space-y-2">
                 {submission.attachments.map((att: any) => (
                   <div key={att.id} className="flex items-center gap-2">
@@ -210,13 +210,13 @@ export default function StudentAssignmentPage() {
                       <div>
                         <img src={att.fileUrl} alt={att.fileName} className="max-h-40 rounded-lg border border-gray-200" />
                         <a href={att.fileUrl} target="_blank" rel="noopener noreferrer"
-                          className="text-xs text-[#3A7AA8] hover:underline mt-1 flex items-center gap-1">
+                          className="text-xs text-[var(--accent-600)] hover:underline mt-1 flex items-center gap-1">
                           <Download className="w-3 h-3" /> {att.fileName}
                         </a>
                       </div>
                     ) : (
                       <a href={att.fileUrl} target="_blank" rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm text-[#3A7AA8] hover:underline">
+                        className="flex items-center gap-2 text-sm text-[var(--accent-600)] hover:underline">
                         <FileText className="w-4 h-4" />
                         {att.fileName}
                         <Download className="w-3 h-3" />
@@ -260,8 +260,8 @@ export default function StudentAssignmentPage() {
                 {files.length > 0 && (
                   <div className="space-y-2 mt-3">
                     {files.map((file, i) => (
-                      <div key={i} className="flex items-center gap-2 bg-[#EBF5FD] px-3 py-1.5 rounded-lg text-sm">
-                        {file.type.startsWith("image/") ? <ImageIcon className="w-4 h-4 text-[#3A7AA8]" /> : <FileText className="w-4 h-4 text-[#3A7AA8]" />}
+                      <div key={i} className="flex items-center gap-2 bg-[var(--accent-100)] px-3 py-1.5 rounded-lg text-sm">
+                        {file.type.startsWith("image/") ? <ImageIcon className="w-4 h-4 text-[var(--accent-600)]" /> : <FileText className="w-4 h-4 text-[var(--accent-600)]" />}
                         <span className="flex-1 text-gray-700 truncate">{file.name}</span>
                         <span className="text-gray-400 text-xs">{(file.size / 1024).toFixed(0)} KB</span>
                         <button onClick={() => removeFile(i)} className="text-gray-400 hover:text-red-500">
@@ -273,7 +273,7 @@ export default function StudentAssignmentPage() {
                 )}
               </div>
               <div className="flex gap-3">
-                <Button onClick={submit} disabled={submitting} className="bg-[#BED9F4] hover:bg-[#5B9BD1] text-[#1e3a52] hover:text-white">
+                <Button onClick={submit} disabled={submitting} className="bg-[var(--accent-300)] hover:bg-[var(--accent-500)] text-[var(--accent-900)] hover:text-white">
                   {uploading ? "Завантаження..." : submitting ? "Здача..." : submission ? "Оновити відповідь" : "Здати роботу"}
                 </Button>
                 <Link href="/student">

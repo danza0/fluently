@@ -171,10 +171,10 @@ export default function TeacherDiaryPage() {
   const upcomingLessons = lessons.filter(l => isFuture(new Date(l.date)) && !isToday(new Date(l.date)))
   const pastLessons = lessons.filter(l => isPast(new Date(l.date)) && !isToday(new Date(l.date)))
 
-  if (loading) return <div className="p-8 text-gray-500">Завантаження...</div>
+  if (loading) return <div className="p-4 md:p-8 text-gray-500">Завантаження...</div>
 
   return (
-    <div className="p-8 max-w-4xl">
+    <div className="p-4 md:p-8 max-w-4xl">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Щоденник уроків</h1>
