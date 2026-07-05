@@ -9,7 +9,7 @@ interface AssignmentCardProps {
     id: string
     title: string
     description?: string | null
-    dueDate: string | Date
+    dueDate: string | Date | null
     maxGrade: number
     assignmentGroups?: { group: { name: string } }[]
     submissions?: { status: string; isLate: boolean; grade?: { score: number } | null }[]
@@ -18,8 +18,8 @@ interface AssignmentCardProps {
 }
 
 export function AssignmentCard({ assignment, role = "STUDENT" }: AssignmentCardProps) {
-  const dueDate = new Date(assignment.dueDate)
-  const isOverdue = new Date() > dueDate
+  const dueDate = assignment.dueDate ? new Date(assignment.dueDate) : null
+  const isOverdue = dueDate ? new Date() > dueDate : false
   const submission = assignment.submissions?.[0]
   const href = role === "TEACHER" ? `/dashboard/assignments/${assignment.id}` : `/student/assignments/${assignment.id}`
 
@@ -42,7 +42,7 @@ export function AssignmentCard({ assignment, role = "STUDENT" }: AssignmentCardP
         <div className="flex items-center gap-4 text-xs text-gray-400">
           <span className="flex items-center gap-1">
             <Calendar className="w-3 h-3" />
-            {format(dueDate, "d MMM yyyy", { locale: uk })}
+            {dueDate ? format(dueDate, "d MMM yyyy", { locale: uk }) : "Без дедлайну"}
           </span>
           {assignment.assignmentGroups && assignment.assignmentGroups.length > 0 && (
             <span className="flex items-center gap-1">

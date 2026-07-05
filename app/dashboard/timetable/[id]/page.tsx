@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { uk } from "date-fns/locale"
+import { UserAvatar } from "@/components/ui/user-avatar"
 
 type Tab = "stream" | "attendance" | "materials" | "students"
 
@@ -179,8 +180,8 @@ export default function LessonDetailPage() {
     setSavingAttendance(false)
   }
 
-  if (loading) return <div className="p-8 text-gray-500">Завантаження...</div>
-  if (!lesson) return <div className="p-8 text-gray-500">Урок не знайдено</div>
+  if (loading) return <div className="p-4 md:p-8 text-gray-500">Завантаження...</div>
+  if (!lesson) return <div className="p-4 md:p-8 text-gray-500">Урок не знайдено</div>
 
   const members = lesson.group?.memberships ?? []
   const presentCount = lesson.attendances?.filter((a: any) => a.status === "PRESENT").length ?? 0
@@ -248,8 +249,8 @@ export default function LessonDetailPage() {
                 onClick={() => setTab(t.id)}
                 className={`flex flex-col items-center gap-1.5 px-5 py-3 rounded-xl text-sm font-medium transition-all min-w-[90px] ${
                   active
-                    ? "bg-[#BED9F4] text-[#1e3a52]"
-                    : "bg-[#F5F8FA] text-gray-500 hover:bg-[#EBF5FD] hover:text-[#3A7AA8]"
+                    ? "bg-[var(--accent-300)] text-[var(--accent-900)]"
+                    : "bg-[#F5F8FA] text-gray-500 hover:bg-[var(--accent-100)] hover:text-[var(--accent-600)]"
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -261,7 +262,7 @@ export default function LessonDetailPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-6xl mx-auto px-8 py-6 flex gap-6">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 flex gap-6">
         {/* Main content */}
         <div className="flex-1 min-w-0">
           <AnimatePresence mode="wait">
@@ -286,7 +287,7 @@ export default function LessonDetailPage() {
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <Clock className="w-5 h-5 text-[#3A7AA8] mt-0.5 flex-shrink-0" />
+                      <Clock className="w-5 h-5 text-[var(--accent-600)] mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="text-xs text-gray-400 mb-0.5">Час</p>
                         <p className="text-sm text-[#111111]">{lesson.startTime} – {lesson.endTime}</p>
@@ -312,14 +313,14 @@ export default function LessonDetailPage() {
                     )}
                     {lesson.meetLink && (
                       <div className="flex items-start gap-3">
-                        <ExternalLink className="w-5 h-5 text-[#3A7AA8] mt-0.5 flex-shrink-0" />
+                        <ExternalLink className="w-5 h-5 text-[var(--accent-600)] mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="text-xs text-gray-400 mb-0.5">Google Meet</p>
                           <a
                             href={lesson.meetLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-[#3A7AA8] hover:underline break-all"
+                            className="text-sm text-[var(--accent-600)] hover:underline break-all"
                           >
                             {lesson.meetLink}
                           </a>
@@ -328,12 +329,12 @@ export default function LessonDetailPage() {
                     )}
                     {lesson.assignment && (
                       <div className="flex items-start gap-3">
-                        <BookOpen className="w-5 h-5 text-[#3A7AA8] mt-0.5 flex-shrink-0" />
+                        <BookOpen className="w-5 h-5 text-[var(--accent-600)] mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="text-xs text-gray-400 mb-0.5">Завдання</p>
                           <Link
                             href={`/dashboard/assignments/${lesson.assignment.id}`}
-                            className="text-sm text-[#3A7AA8] hover:underline"
+                            className="text-sm text-[var(--accent-600)] hover:underline"
                           >
                             {lesson.assignment.title}
                           </Link>
@@ -366,11 +367,7 @@ export default function LessonDetailPage() {
                         return (
                           <div key={m.user.id} className="py-3 border-b border-gray-50 last:border-0">
                             <div className="flex items-center gap-3 mb-2">
-                              <div className="w-8 h-8 rounded-full bg-[#EBF5FD] flex items-center justify-center flex-shrink-0">
-                                <span className="text-xs font-bold text-[#3A7AA8]">
-                                  {m.user.name?.charAt(0)?.toUpperCase() ?? "?"}
-                                </span>
-                              </div>
+                              <UserAvatar name={m.user.name} avatar={m.user.avatar} className="w-8 h-8 bg-[var(--accent-100)] text-xs font-bold text-[var(--accent-600)]" />
                               <div className="flex-1">
                                 <p className="text-sm font-medium text-[#111111]">{m.user.name}</p>
                                 <p className="text-xs text-gray-400">@{m.user.nickname}</p>
@@ -398,7 +395,7 @@ export default function LessonDetailPage() {
                                 ...prev,
                                 [m.user.id]: { ...prev[m.user.id] ?? { status: "PRESENT", note: "" }, note: e.target.value }
                               }))}
-                              className="text-xs h-8 bg-[#FAFBFD] border-gray-200 focus:border-[#BED9F4] placeholder:text-gray-300"
+                              className="text-xs h-8 bg-[#FAFBFD] border-gray-200 focus:border-[var(--accent-300)] placeholder:text-gray-300"
                             />
                           </div>
                         )
@@ -414,7 +411,7 @@ export default function LessonDetailPage() {
                     <Button
                       onClick={saveAttendance}
                       disabled={savingAttendance}
-                      className="bg-[#BED9F4] hover:bg-[#5B9BD1] text-[#1e3a52] hover:text-white"
+                      className="bg-[var(--accent-300)] hover:bg-[var(--accent-500)] text-[var(--accent-900)] hover:text-white"
                     >
                       {savingAttendance ? "Збереження..." : "Зберегти"}
                     </Button>
@@ -442,26 +439,26 @@ export default function LessonDetailPage() {
                   ) : (
                     <div className="space-y-4">
                       {lesson.assignment && (
-                        <div className="flex items-center gap-4 p-4 bg-[#EBF5FD] rounded-xl">
+                        <div className="flex items-center gap-4 p-4 bg-[var(--accent-100)] rounded-xl">
                           <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0">
-                            <BookOpen className="w-5 h-5 text-[#3A7AA8]" />
+                            <BookOpen className="w-5 h-5 text-[var(--accent-600)]" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs text-gray-400 mb-0.5">Завдання</p>
                             <Link
                               href={`/dashboard/assignments/${lesson.assignment.id}`}
-                              className="text-sm font-medium text-[#3A7AA8] hover:underline"
+                              className="text-sm font-medium text-[var(--accent-600)] hover:underline"
                             >
                               {lesson.assignment.title}
                             </Link>
                           </div>
-                          <ClipboardList className="w-4 h-4 text-[#3A7AA8] flex-shrink-0" />
+                          <ClipboardList className="w-4 h-4 text-[var(--accent-600)] flex-shrink-0" />
                         </div>
                       )}
                       {lesson.meetLink && (
-                        <div className="flex items-center gap-4 p-4 bg-[#EBF5FD] rounded-xl">
+                        <div className="flex items-center gap-4 p-4 bg-[var(--accent-100)] rounded-xl">
                           <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0">
-                            <ExternalLink className="w-5 h-5 text-[#3A7AA8]" />
+                            <ExternalLink className="w-5 h-5 text-[var(--accent-600)]" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs text-gray-400 mb-0.5">Google Meet</p>
@@ -469,12 +466,12 @@ export default function LessonDetailPage() {
                               href={lesson.meetLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-sm font-medium text-[#3A7AA8] hover:underline break-all"
+                              className="text-sm font-medium text-[var(--accent-600)] hover:underline break-all"
                             >
                               {lesson.meetLink}
                             </a>
                           </div>
-                          <ExternalLink className="w-4 h-4 text-[#3A7AA8] flex-shrink-0" />
+                          <ExternalLink className="w-4 h-4 text-[var(--accent-600)] flex-shrink-0" />
                         </div>
                       )}
                       {lesson.description && (
@@ -513,11 +510,7 @@ export default function LessonDetailPage() {
                         const att = lesson.attendances?.find((a: any) => a.student.id === m.user.id)
                         return (
                           <div key={m.user.id} className="flex items-center gap-3 py-2.5 border-b border-gray-50 last:border-0">
-                            <div className="w-9 h-9 rounded-full bg-[#EBF5FD] flex items-center justify-center flex-shrink-0">
-                              <span className="text-sm font-bold text-[#3A7AA8]">
-                                {m.user.name?.charAt(0)?.toUpperCase() ?? "?"}
-                              </span>
-                            </div>
+                            <UserAvatar name={m.user.name} avatar={m.user.avatar} className="w-9 h-9 bg-[var(--accent-100)] text-sm font-bold text-[var(--accent-600)]" />
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-[#111111]">{m.user.name}</p>
                               <p className="text-xs text-gray-400">@{m.user.nickname}</p>
@@ -546,7 +539,7 @@ export default function LessonDetailPage() {
             <h3 className="text-sm font-semibold text-[#111111] mb-3">Інформація про урок</h3>
             <div className="space-y-2.5 text-sm">
               <div className="flex items-center gap-2 text-gray-600">
-                <Users className="w-4 h-4 text-[#3A7AA8] flex-shrink-0" />
+                <Users className="w-4 h-4 text-[var(--accent-600)] flex-shrink-0" />
                 <span className="truncate">{lesson.group?.name}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-600">
@@ -554,11 +547,11 @@ export default function LessonDetailPage() {
                 <span className="capitalize">{dateFormatted}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-600">
-                <Clock className="w-4 h-4 text-[#3A7AA8] flex-shrink-0" />
+                <Clock className="w-4 h-4 text-[var(--accent-600)] flex-shrink-0" />
                 <span>{lesson.startTime} – {lesson.endTime}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-600">
-                <UserCheck className="w-4 h-4 text-[#3A7AA8] flex-shrink-0" />
+                <UserCheck className="w-4 h-4 text-[var(--accent-600)] flex-shrink-0" />
                 <span>{presentCount} присутніх / {totalCount} учнів</span>
               </div>
             </div>
@@ -569,7 +562,7 @@ export default function LessonDetailPage() {
               <h3 className="text-sm font-semibold text-[#111111] mb-3">Завдання</h3>
               <Link
                 href={`/dashboard/assignments/${lesson.assignment.id}`}
-                className="flex items-center gap-2 text-sm text-[#3A7AA8] hover:underline"
+                className="flex items-center gap-2 text-sm text-[var(--accent-600)] hover:underline"
               >
                 <BookOpen className="w-4 h-4 flex-shrink-0" />
                 <span className="line-clamp-2">{lesson.assignment.title}</span>
@@ -628,7 +621,7 @@ export default function LessonDetailPage() {
                 <img src={editForm.coverImage} alt="Обкладинка" className="w-full h-24 rounded-xl object-cover border border-gray-200 mb-2 mt-1" />
               )}
               <label>
-                <div className={`flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-[#BED9F4] rounded-xl p-3 cursor-pointer transition-colors text-sm text-gray-500 ${uploadingCover ? "opacity-50 pointer-events-none" : ""}`}>
+                <div className={`flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-[var(--accent-300)] rounded-xl p-3 cursor-pointer transition-colors text-sm text-gray-500 ${uploadingCover ? "opacity-50 pointer-events-none" : ""}`}>
                   <Image className="w-4 h-4 text-gray-400" />
                   {uploadingCover ? "Завантаження..." : editForm.coverImage ? "Змінити зображення" : "Додати обкладинку"}
                 </div>
@@ -638,7 +631,7 @@ export default function LessonDetailPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditOpen(false)}>Скасувати</Button>
-            <Button onClick={saveEdit} disabled={saving || uploadingCover} className="bg-[#BED9F4] hover:bg-[#5B9BD1] text-[#1e3a52] hover:text-white">
+            <Button onClick={saveEdit} disabled={saving || uploadingCover} className="bg-[var(--accent-300)] hover:bg-[var(--accent-500)] text-[var(--accent-900)] hover:text-white">
               {saving ? "Збереження..." : "Зберегти"}
             </Button>
           </DialogFooter>

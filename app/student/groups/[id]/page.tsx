@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, Users, BookOpen, GraduationCap, Clock, Star, Rss, ClipboardList } from "lucide-react"
 import { format } from "date-fns"
 import { uk } from "date-fns/locale"
+import { UserAvatar } from "@/components/ui/user-avatar"
 
 type Tab = "stream" | "assignments" | "people" | "grades"
 
@@ -20,7 +21,7 @@ const TABS: { id: Tab; label: string; icon: React.ComponentType<{ className?: st
 const statusBadge = (sub: any) => {
   if (!sub) return null
   if (sub.grade) return <span className="text-[10px] bg-[#E0FFC2] text-green-800 px-1.5 py-0.5 rounded-full font-medium">Оцінено: {sub.grade.score}</span>
-  return <span className="text-[10px] bg-[#EBF5FD] text-[#3A7AA8] px-1.5 py-0.5 rounded-full font-medium">Здано</span>
+  return <span className="text-[10px] bg-[var(--accent-100)] text-[var(--accent-600)] px-1.5 py-0.5 rounded-full font-medium">Здано</span>
 }
 
 export default function StudentGroupPage() {
@@ -47,8 +48,8 @@ export default function StudentGroupPage() {
     fetchData()
   }, [params.id])
 
-  if (loading) return <div className="p-8 text-gray-500">Завантаження...</div>
-  if (!group) return <div className="p-8 text-gray-500">Групу не знайдено</div>
+  if (loading) return <div className="p-4 md:p-8 text-gray-500">Завантаження...</div>
+  if (!group) return <div className="p-4 md:p-8 text-gray-500">Групу не знайдено</div>
 
   const assignments = group.assignmentGroups ?? []
   const members = group.memberships ?? []
@@ -85,8 +86,8 @@ export default function StudentGroupPage() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white border-b border-gray-100 px-8">
-        <div className="flex gap-2 py-3">
+      <div className="bg-white border-b border-gray-100 px-4 md:px-8 overflow-x-auto">
+        <div className="flex gap-2 py-3 min-w-max">
           {TABS.map(t => {
             const Icon = t.icon
             const active = tab === t.id
@@ -96,8 +97,8 @@ export default function StudentGroupPage() {
                 onClick={() => setTab(t.id)}
                 className={`flex flex-col items-center gap-1.5 px-5 py-3 rounded-xl text-sm font-medium transition-all min-w-[90px] ${
                   active
-                    ? "bg-[#BED9F4] text-[#1e3a52]"
-                    : "bg-[#F5F8FA] text-gray-500 hover:bg-[#EBF5FD] hover:text-[#3A7AA8]"
+                    ? "bg-[var(--accent-300)] text-[var(--accent-900)]"
+                    : "bg-[#F5F8FA] text-gray-500 hover:bg-[var(--accent-100)] hover:text-[var(--accent-600)]"
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -109,7 +110,7 @@ export default function StudentGroupPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-6xl mx-auto px-8 py-6 flex gap-6">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 flex gap-6">
         {/* Main content */}
         <div className="flex-1 min-w-0">
           <AnimatePresence mode="wait">
@@ -134,16 +135,16 @@ export default function StudentGroupPage() {
                         >
                           <Link href={`/student/assignments/${ag.assignment.id}`}>
                             <div className="flex items-start gap-4">
-                              <div className="w-10 h-10 rounded-full bg-[#EBF5FD] flex items-center justify-center flex-shrink-0">
-                                <BookOpen className="w-5 h-5 text-[#3A7AA8]" />
+                              <div className="w-10 h-10 rounded-full bg-[var(--accent-100)] flex items-center justify-center flex-shrink-0">
+                                <BookOpen className="w-5 h-5 text-[var(--accent-600)]" />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-start justify-between gap-2">
-                                  <h3 className="font-semibold text-[#111111] hover:text-[#3A7AA8] transition-colors">{ag.assignment.title}</h3>
+                                  <h3 className="font-semibold text-[#111111] hover:text-[var(--accent-600)] transition-colors">{ag.assignment.title}</h3>
                                   <div className="flex flex-col items-end gap-1 flex-shrink-0">
                                     {statusBadge(mySub)}
                                     <span className="text-xs text-gray-400">
-                                      {format(new Date(ag.assignment.dueDate), "d MMM", { locale: uk })}
+                                      {ag.assignment.dueDate ? format(new Date(ag.assignment.dueDate), "d MMM", { locale: uk }) : "Без дедлайну"}
                                     </span>
                                   </div>
                                 </div>
@@ -176,19 +177,19 @@ export default function StudentGroupPage() {
                         const mySub = currentUserId
                           ? ag.assignment.submissions?.find((s: any) => s.studentId === currentUserId)
                           : null
-                        const isPast = new Date(ag.assignment.dueDate) < new Date()
+                        const isPast = ag.assignment.dueDate ? new Date(ag.assignment.dueDate) < new Date() : false
                         return (
                           <Link key={ag.id} href={`/student/assignments/${ag.assignment.id}`}>
                             <motion.div whileHover={{ backgroundColor: "#FFFDF8" }} className="flex items-center gap-4 px-5 py-4 transition-colors">
-                              <div className="w-8 h-8 rounded-full bg-[#EBF5FD] flex items-center justify-center flex-shrink-0">
-                                <BookOpen className="w-4 h-4 text-[#3A7AA8]" />
+                              <div className="w-8 h-8 rounded-full bg-[var(--accent-100)] flex items-center justify-center flex-shrink-0">
+                                <BookOpen className="w-4 h-4 text-[var(--accent-600)]" />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="font-medium text-[#111111] text-sm">{ag.assignment.title}</p>
                                 <div className="flex items-center gap-2 mt-0.5">
                                   <Clock className="w-3 h-3 text-gray-400" />
                                   <span className={`text-xs ${isPast && !mySub ? "text-red-500" : "text-gray-400"}`}>
-                                    {format(new Date(ag.assignment.dueDate), "d MMM yyyy, HH:mm", { locale: uk })}
+                                    {ag.assignment.dueDate ? format(new Date(ag.assignment.dueDate), "d MMM yyyy, HH:mm", { locale: uk }) : "Без дедлайну"}
                                   </span>
                                 </div>
                               </div>
@@ -218,15 +219,13 @@ export default function StudentGroupPage() {
                     <div className="divide-y divide-gray-50">
                       {members.map((m: any) => (
                         <div key={m.id} className="flex items-center gap-3 px-5 py-3">
-                          <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
-                            m.user.id === currentUserId ? "bg-[#BED9F4] text-[#1e3a52]" : "bg-[#EBF5FD] text-[#3A7AA8]"
-                          }`}>
-                            {m.user.name.charAt(0).toUpperCase()}
-                          </div>
+                          <UserAvatar name={m.user.name} avatar={m.user.avatar} className={`w-9 h-9 text-sm font-bold ${
+                            m.user.id === currentUserId ? "bg-[var(--accent-300)] text-[var(--accent-900)]" : "bg-[var(--accent-100)] text-[var(--accent-600)]"
+                          }`} />
                           <div>
                             <p className="font-medium text-[#111111] text-sm">
                               {m.user.name}
-                              {m.user.id === currentUserId && <span className="ml-2 text-[10px] bg-[#BED9F4] text-[#1e3a52] px-1.5 py-0.5 rounded-full">Ви</span>}
+                              {m.user.id === currentUserId && <span className="ml-2 text-[10px] bg-[var(--accent-300)] text-[var(--accent-900)] px-1.5 py-0.5 rounded-full">Ви</span>}
                             </p>
                             <p className="text-xs text-gray-400">@{m.user.nickname}</p>
                           </div>
@@ -257,7 +256,7 @@ export default function StudentGroupPage() {
                             <motion.div whileHover={{ backgroundColor: "#FFFDF8" }} className="flex items-center justify-between px-5 py-4 transition-colors">
                               <div>
                                 <p className="font-medium text-[#111111] text-sm">{ag.assignment.title}</p>
-                                <p className="text-xs text-gray-400 mt-0.5">Термін: {format(new Date(ag.assignment.dueDate), "d MMM yyyy", { locale: uk })}</p>
+                                <p className="text-xs text-gray-400 mt-0.5">Термін: {ag.assignment.dueDate ? format(new Date(ag.assignment.dueDate), "d MMM yyyy", { locale: uk }) : "без дедлайну"}</p>
                               </div>
                               <div className="text-right">
                                 {mySub?.grade ? (
@@ -269,7 +268,7 @@ export default function StudentGroupPage() {
                                     )}
                                   </div>
                                 ) : mySub ? (
-                                  <span className="text-sm text-[#3A7AA8]">Очікує оцінки</span>
+                                  <span className="text-sm text-[var(--accent-600)]">Очікує оцінки</span>
                                 ) : (
                                   <span className="text-sm text-gray-400">Не здано</span>
                                 )}

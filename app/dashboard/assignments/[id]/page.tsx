@@ -6,7 +6,10 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Users, Calendar, Clock, CheckCircle, FileText, Image as ImageIcon, Download } from "lucide-react"
+import { ArrowLeft, Users, Calendar, Clock, CheckCircle, FileText, Image as ImageIcon, Download, Pencil } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { uk } from "date-fns/locale"
@@ -17,6 +20,46 @@ export default function AssignmentDetailPage() {
   const [assignment, setAssignment] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [grading, setGrading] = useState<Record<string, { score: number; feedback: string }>>({})
+  const [editOpen, setEditOpen] = useState(false)
+  const [editForm, setEditForm] = useState({ title: "", description: "", dueDate: "", maxGrade: 12 })
+  const [saving, setSaving] = useState(false)
+
+  const openEdit = () => {
+    setEditForm({
+      title: assignment.title ?? "",
+      description: assignment.description ?? "",
+      dueDate: assignment.dueDate ? format(new Date(assignment.dueDate), "yyyy-MM-dd'T'HH:mm") : "",
+      maxGrade: assignment.maxGrade ?? 12,
+    })
+    setEditOpen(true)
+  }
+
+  const saveEdit = async () => {
+    if (!editForm.title.trim()) { toast.error("Введіть назву"); return }
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/assignments/${params.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editForm.title.trim(),
+          description: editForm.description,
+          dueDate: editForm.dueDate || null,
+          maxGrade: Number(editForm.maxGrade),
+        }),
+      })
+      if (res.ok) {
+        toast.success("Завдання оновлено")
+        setEditOpen(false)
+        fetchAssignment()
+      } else {
+        const err = await res.json().catch(() => null)
+        toast.error(err?.error || "Помилка збереження")
+      }
+    } finally {
+      setSaving(false)
+    }
+  }
 
   const fetchAssignment = async () => {
     const res = await fetch(`/api/assignments/${params.id}`)
@@ -42,45 +85,51 @@ export default function AssignmentDetailPage() {
     }
   }
 
-  if (loading) return <div className="p-8 text-gray-500">Завантаження...</div>
-  if (!assignment) return <div className="p-8 text-gray-500">Завдання не знайдено</div>
+  if (loading) return <div className="p-4 md:p-8 text-gray-500">Завантаження...</div>
+  if (!assignment) return <div className="p-4 md:p-8 text-gray-500">Завдання не знайдено</div>
 
-  const dueDate = new Date(assignment.dueDate)
-  const isOverdue = new Date() > dueDate
+  const dueDate = assignment.dueDate ? new Date(assignment.dueDate) : null
+  const isOverdue = dueDate ? new Date() > dueDate : false
   const submittedCount = assignment.submissions?.length ?? 0
   const gradedCount = assignment.submissions?.filter((s: any) => s.status === "GRADED").length ?? 0
 
   return (
     <div className="min-h-screen bg-[#FFFDF8]">
       {/* Banner */}
-      <div className="w-full bg-[#BED9F4] px-8 py-6">
-        <Link href="/dashboard/assignments" className="inline-flex items-center gap-2 text-[#1e3a52]/70 hover:text-[#1e3a52] mb-4 text-sm">
+      <div className="w-full bg-[var(--accent-300)] px-4 md:px-8 py-6">
+        <Link href="/dashboard/assignments" className="inline-flex items-center gap-2 text-[var(--accent-900)]/70 hover:text-[var(--accent-900)] mb-4 text-sm">
           <ArrowLeft className="w-4 h-4" />
           Назад до завдань
         </Link>
         <div className="flex items-start justify-between">
-          <h1 className="text-2xl font-bold text-[#1e3a52]">{assignment.title}</h1>
-          {isOverdue && <Badge variant="destructive">Дедлайн минув</Badge>}
+          <h1 className="text-2xl font-bold text-[var(--accent-900)]">{assignment.title}</h1>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {isOverdue && <Badge variant="destructive">Дедлайн минув</Badge>}
+            <Button variant="outline" size="sm" onClick={openEdit} className="gap-1.5 bg-white/60 hover:bg-white">
+              <Pencil className="w-3.5 h-3.5" />
+              Редагувати
+            </Button>
+          </div>
         </div>
         {assignment.assignmentGroups?.length > 0 && (
           <div className="flex gap-2 mt-2 flex-wrap">
             {assignment.assignmentGroups.map((ag: any) => (
-              <span key={ag.id} className="text-xs bg-white/40 text-[#1e3a52] px-2 py-0.5 rounded-full">{ag.group.name}</span>
+              <span key={ag.id} className="text-xs bg-white/40 text-[var(--accent-900)] px-2 py-0.5 rounded-full">{ag.group.name}</span>
             ))}
           </div>
         )}
       </div>
 
-      <div className="max-w-4xl mx-auto px-8 py-6 space-y-4">
+      <div className="max-w-4xl mx-auto px-4 md:px-8 py-6 space-y-4">
         {/* Task info card */}
         <div className="bg-white rounded-xl border border-gray-100 p-5 flex items-start gap-4">
           {/* Date badge */}
-          <div className="flex flex-col items-center justify-center bg-[#BED9F4] rounded-xl px-4 py-3 flex-shrink-0">
-            <span className="text-[10px] font-semibold text-[#1e3a52] uppercase tracking-wide">
-              {format(dueDate, "MMM", { locale: uk })}
+          <div className="flex flex-col items-center justify-center bg-[var(--accent-300)] rounded-xl px-4 py-3 flex-shrink-0">
+            <span className="text-[10px] font-semibold text-[var(--accent-900)] uppercase tracking-wide">
+              {dueDate ? format(dueDate, "MMM", { locale: uk }) : "Без"}
             </span>
-            <span className="text-2xl font-bold text-[#1e3a52] leading-none">
-              {format(dueDate, "d")}
+            <span className={dueDate ? "text-2xl font-bold text-[var(--accent-900)] leading-none" : "text-[10px] font-semibold text-[var(--accent-900)] leading-none"}>
+              {dueDate ? format(dueDate, "d") : "дедлайну"}
             </span>
           </div>
           <div className="flex-1 min-w-0">
@@ -90,7 +139,7 @@ export default function AssignmentDetailPage() {
             <div className="flex gap-4 text-sm text-gray-500 flex-wrap">
               <span className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
-                {format(dueDate, "d MMMM yyyy, HH:mm", { locale: uk })}
+                {dueDate ? format(dueDate, "d MMMM yyyy, HH:mm", { locale: uk }) : "Без дедлайну"}
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="w-4 h-4" />
@@ -111,7 +160,7 @@ export default function AssignmentDetailPage() {
             <div className="space-y-2">
               {assignment.attachments.map((att: any) => (
                 <a key={att.id} href={att.fileUrl} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-[#3A7AA8] hover:underline">
+                  className="flex items-center gap-2 text-sm text-[var(--accent-600)] hover:underline">
                   {att.fileType?.startsWith("image/") ? <ImageIcon className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
                   {att.fileName}
                   <Download className="w-3 h-3" />
@@ -124,7 +173,7 @@ export default function AssignmentDetailPage() {
         {/* Submissions */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <h2 className="text-base font-semibold text-[#111111] mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-[#3A7AA8]" />
+            <Users className="w-5 h-5 text-[var(--accent-600)]" />
             Роботи учнів ({submittedCount})
           </h2>
           {assignment.submissions?.length === 0 ? (
@@ -148,12 +197,12 @@ export default function AssignmentDetailPage() {
                     <div className="bg-gray-50 rounded-lg p-3 mb-4 text-sm text-gray-700 whitespace-pre-wrap">{sub.textContent}</div>
                   )}
                   {sub.attachments?.length > 0 && (
-                    <div className="mb-4 p-3 bg-[#EBF5FD] rounded-lg">
-                      <p className="text-sm font-medium text-[#3A7AA8] mb-2">Файли учня:</p>
+                    <div className="mb-4 p-3 bg-[var(--accent-100)] rounded-lg">
+                      <p className="text-sm font-medium text-[var(--accent-600)] mb-2">Файли учня:</p>
                       <div className="space-y-1">
                         {sub.attachments.map((att: any) => (
                           <a key={att.id} href={att.fileUrl} target="_blank" rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-sm text-[#3A7AA8] hover:underline">
+                            className="flex items-center gap-2 text-sm text-[var(--accent-600)] hover:underline">
                             {att.fileType?.startsWith("image/") ? <ImageIcon className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
                             {att.fileName}
                             <Download className="w-3 h-3" />
@@ -186,12 +235,12 @@ export default function AssignmentDetailPage() {
                             placeholder="Коментар..." rows={1}
                             className="text-sm"
                           />
-                          <Button size="sm" onClick={() => submitGrade(sub.id)} className="bg-[#BED9F4] hover:bg-[#5B9BD1] text-[#1e3a52] hover:text-white">Оновити</Button>
+                          <Button size="sm" onClick={() => submitGrade(sub.id)} className="bg-[var(--accent-300)] hover:bg-[var(--accent-500)] text-[var(--accent-900)] hover:text-white">Оновити</Button>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="border border-[#BED9F4] rounded-lg p-3">
+                    <div className="border border-[var(--accent-300)] rounded-lg p-3">
                       <p className="text-sm font-medium text-gray-700 mb-2">Виставити оцінку:</p>
                       <div className="flex gap-2">
                         <input
@@ -217,6 +266,41 @@ export default function AssignmentDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Edit assignment dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Редагувати завдання</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-title">Назва *</Label>
+              <Input id="edit-title" value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Опис</Label>
+              <Textarea id="edit-description" rows={4} value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-dueDate">Дедлайн (порожньо = без дедлайну)</Label>
+                <Input id="edit-dueDate" type="datetime-local" value={editForm.dueDate} onChange={e => setEditForm(f => ({ ...f, dueDate: e.target.value }))} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-maxGrade">Макс. оцінка</Label>
+                <Input id="edit-maxGrade" type="number" min={1} max={12} value={editForm.maxGrade} onChange={e => setEditForm(f => ({ ...f, maxGrade: Number(e.target.value) }))} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>Скасувати</Button>
+            <Button onClick={saveEdit} disabled={saving} className="bg-sky-custom hover:bg-sky-dark">
+              {saving ? "Збереження..." : "Зберегти"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

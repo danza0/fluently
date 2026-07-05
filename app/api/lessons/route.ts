@@ -18,7 +18,9 @@ export async function GET() {
       group: true,
       teacher: { select: { id: true, name: true, nickname: true } },
       assignment: { select: { id: true, title: true } },
+      // Students only receive their own attendance records
       attendances: {
+        where: user.role === "TEACHER" ? undefined : { studentId: user.id },
         include: { student: { select: { id: true, name: true, nickname: true } } },
       },
     },

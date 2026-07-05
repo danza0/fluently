@@ -24,7 +24,7 @@ export default async function CalendarPage() {
   const days = eachDayOfInterval({ start, end })
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
           <Calendar className="w-6 h-6" />
@@ -44,7 +44,7 @@ export default async function CalendarPage() {
             <div key={`empty-${i}`} />
           ))}
           {days.map(day => {
-            const dayAssignments = assignments.filter(a => isSameDay(new Date(a.dueDate), day))
+            const dayAssignments = assignments.filter(a => isSameDay(new Date(a.dueDate!), day))
             return (
               <div key={day.toISOString()} className={`min-h-[80px] p-1.5 rounded-lg border ${isToday(day) ? "bg-sky-light border-blue-200" : "border-transparent hover:bg-gray-50"}`}>
                 <div className={`text-sm font-medium mb-1 ${isToday(day) ? "text-sky-darker" : "text-gray-700"}`}>
@@ -70,12 +70,12 @@ export default async function CalendarPage() {
             {assignments.map(a => (
               <div key={a.id} className="flex items-center gap-4 py-2">
                 <div className="text-center min-w-[48px]">
-                  <div className="text-2xl font-bold text-sky-darker">{format(new Date(a.dueDate), "d")}</div>
-                  <div className="text-xs text-gray-400">{format(new Date(a.dueDate), "EEE", { locale: uk })}</div>
+                  <div className="text-2xl font-bold text-sky-darker">{format(new Date(a.dueDate!), "d")}</div>
+                  <div className="text-xs text-gray-400">{format(new Date(a.dueDate!), "EEE", { locale: uk })}</div>
                 </div>
                 <div className="flex-1">
                   <div className="font-medium text-gray-900">{a.title}</div>
-                  <div className="text-xs text-gray-400">{format(new Date(a.dueDate), "HH:mm")}</div>
+                  <div className="text-xs text-gray-400">{format(new Date(a.dueDate!), "HH:mm")}</div>
                 </div>
               </div>
             ))}

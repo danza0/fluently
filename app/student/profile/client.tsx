@@ -8,6 +8,7 @@ import { Select } from "@/components/ui/select"
 import { User, Mail, Hash, BookOpen, Globe, Pencil, X, Camera } from "lucide-react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { AccentPicker } from "@/components/profile/accent-picker"
 
 const TIMEZONES = [
   { value: "Europe/Kyiv", label: "Київ (UTC+2/+3)" },
@@ -92,7 +93,7 @@ export default function StudentProfileClient({ studentData }: { studentData: Stu
   }
 
   return (
-    <div className="p-8 max-w-2xl">
+    <div className="p-4 md:p-8 max-w-2xl">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Профіль</h1>
         {!editing && (
@@ -114,9 +115,9 @@ export default function StudentProfileClient({ studentData }: { studentData: Stu
             {(() => {
               const displayAvatar = editing ? avatar : (studentData.avatar ?? "")
               return displayAvatar ? (
-                <img src={displayAvatar} alt={studentData.name} className="w-20 h-20 rounded-full object-cover border-2 border-[#EBF5FD]" />
+                <img src={displayAvatar} alt={studentData.name} className="w-20 h-20 rounded-full object-cover border-2 border-[var(--accent-100)]" />
               ) : (
-                <div className="w-20 h-20 bg-gradient-to-br from-[#BED9F4] to-[#5B9BD1] rounded-full flex items-center justify-center border-2 border-[#EBF5FD]">
+                <div className="w-20 h-20 bg-gradient-to-br from-[var(--accent-300)] to-[var(--accent-500)] rounded-full flex items-center justify-center border-2 border-[var(--accent-100)]">
                   <span className="text-white font-bold text-3xl">{studentData.name.charAt(0)}</span>
                 </div>
               )
@@ -135,7 +136,7 @@ export default function StudentProfileClient({ studentData }: { studentData: Stu
                 </label>
                 {uploadingAvatar && (
                   <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-full">
-                    <div className="w-5 h-5 border-2 border-[#3A7AA8] border-t-transparent rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-[var(--accent-600)] border-t-transparent rounded-full animate-spin" />
                   </div>
                 )}
               </>
@@ -239,6 +240,8 @@ export default function StudentProfileClient({ studentData }: { studentData: Stu
           </div>
         )}
       </div>
+
+      <AccentPicker />
     </div>
   )
 }

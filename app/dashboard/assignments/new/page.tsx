@@ -60,7 +60,7 @@ export default function NewAssignmentPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!form.title || !form.dueDate) { toast.error("Заповніть обов'язкові поля"); return }
+    if (!form.title) { toast.error("Заповніть обов'язкові поля"); return }
     setIsLoading(true)
     try {
       const attachments: UploadedFile[] = []
@@ -79,7 +79,7 @@ export default function NewAssignmentPage() {
       const res = await fetch("/api/assignments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, maxGrade: Number(form.maxGrade), attachments }),
+        body: JSON.stringify({ ...form, dueDate: form.dueDate || null, maxGrade: Number(form.maxGrade), attachments }),
       })
       if (!res.ok) { toast.error("Помилка створення завдання"); return }
       toast.success("Завдання створено!")
@@ -90,7 +90,7 @@ export default function NewAssignmentPage() {
   }
 
   return (
-    <div className="p-8 max-w-2xl">
+    <div className="p-4 md:p-8 max-w-2xl">
       <Link href="/dashboard/assignments" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6">
         <ArrowLeft className="w-4 h-4" />
         Назад до завдань
@@ -108,7 +108,7 @@ export default function NewAssignmentPage() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="dueDate">Дедлайн *</Label>
+              <Label htmlFor="dueDate">Дедлайн (необов&apos;язково)</Label>
               <Input id="dueDate" type="datetime-local" value={form.dueDate} onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))} />
             </div>
             <div className="space-y-2">

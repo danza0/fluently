@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
 import { Mail, Hash, Globe, Camera } from "lucide-react"
 import { toast } from "sonner"
+import { AccentPicker } from "@/components/profile/accent-picker"
 
 const TIMEZONES = [
   { value: "Europe/Kyiv", label: "Київ (UTC+2/+3)" },
@@ -87,16 +88,16 @@ export default function TeacherProfilePage() {
   }
 
   return (
-    <div className="p-8 max-w-2xl">
+    <div className="p-4 md:p-8 max-w-2xl">
       <h1 className="text-2xl font-bold text-gray-900 mb-8">Профіль</h1>
 
       <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6 shadow-sm">
         <div className="flex items-center gap-5 mb-6">
           <div className="relative group">
             {avatar ? (
-              <img src={avatar} alt={name} className="w-20 h-20 rounded-full object-cover border-2 border-[#EBF5FD]" />
+              <img src={avatar} alt={name} className="w-20 h-20 rounded-full object-cover border-2 border-[var(--accent-100)]" />
             ) : (
-              <div className="w-20 h-20 bg-gradient-to-br from-[#BED9F4] to-[#5B9BD1] rounded-full flex items-center justify-center border-2 border-[#EBF5FD]">
+              <div className="w-20 h-20 bg-gradient-to-br from-[var(--accent-300)] to-[var(--accent-500)] rounded-full flex items-center justify-center border-2 border-[var(--accent-100)]">
                 <span className="text-white font-bold text-3xl">{name.charAt(0)}</span>
               </div>
             )}
@@ -112,7 +113,7 @@ export default function TeacherProfilePage() {
             </label>
             {uploadingAvatar && (
               <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-full">
-                <div className="w-5 h-5 border-2 border-[#3A7AA8] border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-[var(--accent-600)] border-t-transparent rounded-full animate-spin" />
               </div>
             )}
           </div>
@@ -182,6 +183,10 @@ export default function TeacherProfilePage() {
             {saving ? "Збереження..." : "Зберегти зміни"}
           </Button>
         </form>
+      </div>
+
+      <div className="mt-6">
+        <AccentPicker />
       </div>
     </div>
   )
