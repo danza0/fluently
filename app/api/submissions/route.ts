@@ -34,7 +34,20 @@ export async function POST(request: Request) {
   const body = await request.json()
   const { assignmentId, textContent, attachments } = body
 
-  const assignment = await prisma.assignment.findUnique({ where: { id: assignmentId } })
+  if (!assignmentId || typeof assignmentId !== "string") {
+    return NextResponse.json({ error: "Невірні дані" }, { status: 400 })
+  }
+
+  // The student must actually be assigned this work (directly or via a group)
+  const assignment = await prisma.assignment.findFirst({
+    where: {
+      id: assignmentId,
+      OR: [
+        { assignmentStudents: { some: { studentId: user.id } } },
+        { assignmentGroups: { some: { group: { memberships: { some: { userId: user.id } } } } } },
+      ],
+    },
+  })
   if (!assignment) return NextResponse.json({ error: "Assignment not found" }, { status: 404 })
 
   const isLate = new Date() > assignment.dueDate
@@ -88,4 +101,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Помилка сервера" }, { status: 500 })
   }
 }
-

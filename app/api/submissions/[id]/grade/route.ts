@@ -10,10 +10,23 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (user.role !== "TEACHER") return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   const { id } = await params
 
+  const submission = await prisma.submission.findUnique({
+    where: { id },
+    include: { assignment: { select: { teacherId: true, maxGrade: true } } },
+  })
+  if (!submission) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (submission.assignment.teacherId !== user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  }
+
   const { score, feedback } = await request.json()
 
-  if (score < 0 || score > 12) {
-    return NextResponse.json({ error: "Score must be between 0 and 12" }, { status: 400 })
+  const maxGrade = submission.assignment.maxGrade
+  if (!Number.isInteger(score) || score < 0 || score > maxGrade) {
+    return NextResponse.json({ error: `Score must be an integer between 0 and ${maxGrade}` }, { status: 400 })
+  }
+  if (feedback !== undefined && feedback !== null && typeof feedback !== "string") {
+    return NextResponse.json({ error: "Invalid feedback" }, { status: 400 })
   }
 
   const existing = await prisma.grade.findUnique({ where: { submissionId: id } })

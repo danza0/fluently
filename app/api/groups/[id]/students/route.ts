@@ -2,6 +2,14 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { publicUserSelect } from "@/lib/public-user"
+
+async function requireOwnGroup(groupId: string, teacherId: string) {
+  const group = await prisma.group.findUnique({ where: { id: groupId }, select: { teacherId: true } })
+  if (!group) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (group.teacherId !== teacherId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  return null
+}
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions)
@@ -10,9 +18,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (user.role !== "TEACHER") return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   const { id } = await params
 
+  const denied = await requireOwnGroup(id, user.id)
+  if (denied) return denied
+
   const { nickname } = await request.json()
-  const student = await prisma.user.findUnique({ where: { nickname } })
-  if (!student) return NextResponse.json({ error: "Учня з таким псевдонімом не знайдено" }, { status: 404 })
+  const student = await prisma.user.findUnique({ where: { nickname }, select: { ...publicUserSelect, role: true } })
+  if (!student || student.role !== "STUDENT") {
+    return NextResponse.json({ error: "Учня з таким псевдонімом не знайдено" }, { status: 404 })
+  }
 
   const existing = await prisma.groupMembership.findUnique({
     where: { userId_groupId: { userId: student.id, groupId: id } },
@@ -29,6 +42,9 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   const user = session.user as any
   if (user.role !== "TEACHER") return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   const { id } = await params
+
+  const denied = await requireOwnGroup(id, user.id)
+  if (denied) return denied
 
   const { studentId } = await request.json()
   await prisma.groupMembership.delete({

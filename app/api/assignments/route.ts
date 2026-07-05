@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { z } from "zod"
+import { publicUserSelect } from "@/lib/public-user"
 
 const createAssignmentSchema = z.object({
   title: z.string().min(1),
@@ -25,8 +26,8 @@ export async function GET() {
       where: { teacherId: user.id },
       include: {
         assignmentGroups: { include: { group: true } },
-        assignmentStudents: { include: { student: true } },
-        submissions: { include: { grade: true, student: true } },
+        assignmentStudents: { include: { student: { select: publicUserSelect } } },
+        submissions: { include: { grade: true, student: { select: publicUserSelect } } },
         attachments: true,
       },
       orderBy: { dueDate: "asc" },
@@ -70,11 +71,34 @@ export async function POST(request: Request) {
     const body = await request.json()
     const data = createAssignmentSchema.parse(body)
 
+    const dueDate = new Date(data.dueDate)
+    if (isNaN(dueDate.getTime())) {
+      return NextResponse.json({ error: "Невірна дата" }, { status: 400 })
+    }
+
+    if (data.groupIds?.length) {
+      const ownedGroups = await prisma.group.count({
+        where: { id: { in: data.groupIds }, teacherId: user.id },
+      })
+      if (ownedGroups !== data.groupIds.length) {
+        return NextResponse.json({ error: "Групу не знайдено" }, { status: 400 })
+      }
+    }
+
+    if (data.studentIds?.length) {
+      const students = await prisma.user.count({
+        where: { id: { in: data.studentIds }, role: "STUDENT" },
+      })
+      if (students !== data.studentIds.length) {
+        return NextResponse.json({ error: "Учня не знайдено" }, { status: 400 })
+      }
+    }
+
     const assignment = await prisma.assignment.create({
       data: {
         title: data.title,
         description: data.description,
-        dueDate: new Date(data.dueDate),
+        dueDate,
         maxGrade: data.maxGrade,
         submissionType: data.submissionType,
         teacherId: user.id,
@@ -94,12 +118,15 @@ export async function POST(request: Request) {
       },
       include: {
         assignmentGroups: { include: { group: true } },
-        assignmentStudents: { include: { student: true } },
+        assignmentStudents: { include: { student: { select: publicUserSelect } } },
       },
     })
 
     return NextResponse.json(assignment, { status: 201 })
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: "Невірні дані" }, { status: 400 })
+    }
     console.error(error)
     return NextResponse.json({ error: "Помилка сервера" }, { status: 500 })
   }

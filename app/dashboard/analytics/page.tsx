@@ -13,7 +13,10 @@ export default async function AnalyticsPage() {
     prisma.user.count({ where: { role: "STUDENT" } }),
     prisma.group.count({ where: { teacherId: user.id } }),
     prisma.assignment.count({ where: { teacherId: user.id } }),
-    prisma.submission.findMany({ include: { grade: true } }),
+    prisma.submission.findMany({
+      where: { assignment: { teacherId: user.id } },
+      include: { grade: true },
+    }),
     prisma.grade.findMany({ where: { teacherId: user.id } }),
   ])
 

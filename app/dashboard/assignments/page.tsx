@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { publicUserSelect } from "@/lib/public-user"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Plus, BookOpen } from "lucide-react"
@@ -14,8 +15,8 @@ export default async function AssignmentsPage() {
     where: { teacherId: user.id },
     include: {
       assignmentGroups: { include: { group: true } },
-      assignmentStudents: { include: { student: true } },
-      submissions: { include: { grade: true, student: true } },
+      assignmentStudents: { include: { student: { select: publicUserSelect } } },
+      submissions: { include: { grade: true, student: { select: publicUserSelect } } },
     },
     orderBy: { dueDate: "asc" },
   })

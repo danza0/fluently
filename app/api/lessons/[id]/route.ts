@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma"
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  const user = session.user as any
   const { id } = await params
 
   const lesson = await prisma.lesson.findUnique({
@@ -18,6 +19,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     },
   })
   if (!lesson) return NextResponse.json({ error: "Not found" }, { status: 404 })
+
+  const isMember = lesson.group.memberships.some((m) => m.userId === user.id)
+  const isOwner = lesson.teacherId === user.id
+  if (!isOwner && !isMember) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+
   return NextResponse.json(lesson)
 }
 
@@ -29,6 +35,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const { id } = await params
 
   try {
+    const existing = await prisma.lesson.findUnique({ where: { id }, select: { teacherId: true } })
+    if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 })
+    if (existing.teacherId !== user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+
     const body = await request.json()
 
     if (!body.title || !body.date || !body.startTime || !body.endTime || !body.groupId) {
@@ -41,12 +51,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     }
 
     const group = await prisma.group.findUnique({ where: { id: body.groupId } })
-    if (!group) {
+    if (!group || group.teacherId !== user.id) {
       return NextResponse.json({ error: "Групу не знайдено" }, { status: 400 })
     }
     if (body.assignmentId) {
       const assignment = await prisma.assignment.findUnique({ where: { id: body.assignmentId } })
-      if (!assignment) {
+      if (!assignment || assignment.teacherId !== user.id) {
         return NextResponse.json({ error: "Завдання не знайдено" }, { status: 400 })
       }
     }
@@ -81,6 +91,10 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   const { id } = await params
 
   try {
+    const existing = await prisma.lesson.findUnique({ where: { id }, select: { teacherId: true } })
+    if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 })
+    if (existing.teacherId !== user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+
     await prisma.lesson.delete({ where: { id } })
     return NextResponse.json({ success: true })
   } catch (err) {
