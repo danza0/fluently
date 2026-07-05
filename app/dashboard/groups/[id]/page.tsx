@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import { ImageCropper } from "@/components/ui/image-cropper"
 
 type Tab = "stream" | "assignments" | "people" | "grades"
 
@@ -66,6 +67,20 @@ export default function GroupDetailPage() {
   const [savingMedia, setSavingMedia] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
   const [uploadingCover, setUploadingCover] = useState(false)
+
+  // Crop state: which image is being cropped and its source file
+  const [cropFile, setCropFile] = useState<File | null>(null)
+  const [cropType, setCropType] = useState<"logo" | "cover" | null>(null)
+
+  const handleCropped = async (blob: Blob) => {
+    const type = cropType
+    setCropFile(null)
+    setCropType(null)
+    if (!type) return
+    const cropped = new File([blob], "crop.jpg", { type: "image/jpeg" })
+    if (type === "logo") await uploadImage(cropped, setEditLogo, setUploadingLogo)
+    else await uploadImage(cropped, setEditCover, setUploadingCover)
+  }
 
   const uploadImage = async (file: File, setUrl: (url: string) => void, setUploading: (v: boolean) => void) => {
     setUploading(true)
@@ -592,7 +607,8 @@ export default function GroupDetailPage() {
                     disabled={uploadingLogo}
                     onChange={e => {
                       const file = e.target.files?.[0]
-                      if (file) uploadImage(file, setEditLogo, setUploadingLogo)
+                      if (file) { setCropFile(file); setCropType("logo") }
+                      e.target.value = ""
                     }}
                   />
                 </label>
@@ -621,7 +637,8 @@ export default function GroupDetailPage() {
                     disabled={uploadingCover}
                     onChange={e => {
                       const file = e.target.files?.[0]
-                      if (file) uploadImage(file, setEditCover, setUploadingCover)
+                      if (file) { setCropFile(file); setCropType("cover") }
+                      e.target.value = ""
                     }}
                   />
                 </label>
@@ -641,6 +658,19 @@ export default function GroupDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Crop dialog (opens on top of the media dialog) */}
+      {cropFile && cropType && (
+        <ImageCropper
+          file={cropFile}
+          aspect={cropType === "logo" ? 1 : 3}
+          outputWidth={cropType === "logo" ? 512 : 1280}
+          rounded={cropType === "logo"}
+          title={cropType === "logo" ? "Обрізати логотип" : "Обрізати обкладинку"}
+          onCancel={() => { setCropFile(null); setCropType(null) }}
+          onCropped={handleCropped}
+        />
+      )}
     </div>
   )
 }

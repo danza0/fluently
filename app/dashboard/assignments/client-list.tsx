@@ -4,7 +4,10 @@ import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Trash2, CheckCircle, XCircle } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Trash2, CheckCircle, XCircle, Pencil } from "lucide-react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { uk } from "date-fns/locale"
@@ -33,12 +36,57 @@ export function AssignmentsClientList({ assignments }: { assignments: Assignment
   const [list, setList] = useState(assignments)
   const [deleteTarget, setDeleteTarget] = useState<Assignment | null>(null)
 
+  const [editTarget, setEditTarget] = useState<Assignment | null>(null)
+  const [editForm, setEditForm] = useState({ title: "", description: "", dueDate: "", maxGrade: 12 })
+  const [savingEdit, setSavingEdit] = useState(false)
+
   const now = new Date()
   const upcoming = list.filter(a => !a.dueDate || new Date(a.dueDate) >= now)
   const past = list.filter(a => a.dueDate && new Date(a.dueDate) < now)
 
   const confirmDelete = (a: Assignment) => {
     setDeleteTarget(a)
+  }
+
+  const openEdit = (a: Assignment) => {
+    setEditForm({
+      title: a.title,
+      description: a.description ?? "",
+      dueDate: a.dueDate ? format(new Date(a.dueDate), "yyyy-MM-dd'T'HH:mm") : "",
+      maxGrade: a.maxGrade,
+    })
+    setEditTarget(a)
+  }
+
+  const saveEdit = async () => {
+    if (!editTarget) return
+    if (!editForm.title.trim()) { toast.error("Введіть назву"); return }
+    setSavingEdit(true)
+    try {
+      const res = await fetch(`/api/assignments/${editTarget.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editForm.title.trim(),
+          description: editForm.description,
+          dueDate: editForm.dueDate || null,
+          maxGrade: Number(editForm.maxGrade),
+        }),
+      })
+      if (res.ok) {
+        const updated = await res.json()
+        setList(prev => prev.map(a => a.id === editTarget.id
+          ? { ...a, title: updated.title, description: updated.description, dueDate: updated.dueDate, maxGrade: updated.maxGrade }
+          : a))
+        toast.success("Завдання оновлено")
+        setEditTarget(null)
+      } else {
+        const err = await res.json().catch(() => null)
+        toast.error(err?.error || "Помилка збереження")
+      }
+    } finally {
+      setSavingEdit(false)
+    }
   }
 
   const handleDelete = async () => {
@@ -108,8 +156,8 @@ export function AssignmentsClientList({ assignments }: { assignments: Assignment
           </div>
         </Link>
 
-        {/* Status indicator + delete */}
-        <div className="flex flex-col items-center justify-center gap-2 pr-4 flex-shrink-0">
+        {/* Status indicator + actions */}
+        <div className="flex flex-col items-center justify-center gap-1.5 pr-3 md:pr-4 flex-shrink-0">
           {submittedCount > 0 ? (
             <CheckCircle className="w-5 h-5 text-green-500" />
           ) : isOverdue ? (
@@ -117,14 +165,23 @@ export function AssignmentsClientList({ assignments }: { assignments: Assignment
           ) : (
             <div className="w-5 h-5 rounded-full border-2 border-gray-200" />
           )}
-          <button
-            onClick={() => confirmDelete(a)}
-            disabled={deleting === a.id}
-            className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
-            title="Видалити завдання"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => openEdit(a)}
+              className="p-1.5 rounded-lg text-gray-400 hover:text-[var(--accent-600)] hover:bg-[var(--accent-100)] transition-all"
+              title="Редагувати завдання"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => confirmDelete(a)}
+              disabled={deleting === a.id}
+              className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+              title="Видалити завдання"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -154,6 +211,41 @@ export function AssignmentsClientList({ assignments }: { assignments: Assignment
           </div>
         </div>
       )}
+
+      {/* Edit assignment dialog */}
+      <Dialog open={!!editTarget} onOpenChange={(open) => { if (!open) setEditTarget(null) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Редагувати завдання</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-title">Назва *</Label>
+              <Input id="edit-title" value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Опис</Label>
+              <Textarea id="edit-description" rows={3} value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-dueDate">Дедлайн (порожньо = без дедлайну)</Label>
+                <Input id="edit-dueDate" type="datetime-local" value={editForm.dueDate} onChange={e => setEditForm(f => ({ ...f, dueDate: e.target.value }))} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-maxGrade">Макс. оцінка</Label>
+                <Input id="edit-maxGrade" type="number" min={1} max={12} value={editForm.maxGrade} onChange={e => setEditForm(f => ({ ...f, maxGrade: Number(e.target.value) }))} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditTarget(null)}>Скасувати</Button>
+            <Button onClick={saveEdit} disabled={savingEdit} className="bg-sky-custom hover:bg-sky-dark text-sky-darker hover:text-white">
+              {savingEdit ? "Збереження..." : "Зберегти"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete confirmation dialog (non-blocking) */}
       <Dialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}>
