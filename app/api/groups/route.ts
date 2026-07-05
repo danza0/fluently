@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { z } from "zod"
 import { nanoid } from "nanoid"
+import { publicUserSelect } from "@/lib/public-user"
 
 const createGroupSchema = z.object({
   name: z.string().min(1),
@@ -20,7 +21,7 @@ export async function GET() {
     const groups = await prisma.group.findMany({
       where: { teacherId: user.id },
       include: {
-        memberships: { include: { user: true } },
+        memberships: { include: { user: { select: publicUserSelect } } },
         assignmentGroups: { include: { assignment: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -32,7 +33,7 @@ export async function GET() {
       include: {
         group: {
           include: {
-            memberships: { include: { user: true } },
+            memberships: { include: { user: { select: publicUserSelect } } },
             assignmentGroups: { include: { assignment: true } },
           },
         },

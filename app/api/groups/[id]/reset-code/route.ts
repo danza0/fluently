@@ -11,6 +11,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (user.role !== "TEACHER") return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   const { id } = await params
 
+  const existing = await prisma.group.findUnique({ where: { id }, select: { teacherId: true } })
+  if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (existing.teacherId !== user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+
   const newCode = nanoid(8).toUpperCase()
   const group = await prisma.group.update({
     where: { id },

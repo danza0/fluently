@@ -27,7 +27,9 @@ export default async function DashboardPage() {
   ])
 
   const avgGrade = grades.length > 0 ? (grades.reduce((s, g) => s + g.score, 0) / grades.length).toFixed(1) : "—"
-  const pendingGrades = await prisma.submission.count({ where: { status: "SUBMITTED" } })
+  const pendingGrades = await prisma.submission.count({
+    where: { status: "SUBMITTED", assignment: { teacherId: user.id } },
+  })
 
   return (
     <div className="p-8">

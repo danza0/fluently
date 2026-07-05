@@ -43,12 +43,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid date" }, { status: 400 })
     }
     const group = await prisma.group.findUnique({ where: { id: body.groupId } })
-    if (!group) {
+    if (!group || group.teacherId !== user.id) {
       return NextResponse.json({ error: "Групу не знайдено" }, { status: 400 })
     }
     if (body.assignmentId) {
       const assignment = await prisma.assignment.findUnique({ where: { id: body.assignmentId } })
-      if (!assignment) {
+      if (!assignment || assignment.teacherId !== user.id) {
         return NextResponse.json({ error: "Завдання не знайдено" }, { status: 400 })
       }
     }

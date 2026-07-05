@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { publicUserSelect } from "@/lib/public-user"
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -11,7 +12,9 @@ export async function GET() {
 
   const students = await prisma.user.findMany({
     where: { role: "STUDENT" },
-    include: {
+    select: {
+      ...publicUserSelect,
+      createdAt: true,
       groupMemberships: { include: { group: true } },
       submissions: { include: { grade: true } },
     },
